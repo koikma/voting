@@ -3,421 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pencalonan Ahli Lembaga Koperasi</title>
+  <title>Pengundian Ahli Lembaga Koperasi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --gold: #B8860B;
-      --gold-light: #F5E6A3;
-      --gold-dark: #7A5800;
-      --navy: #0D1B3E;
-      --navy-light: #1A2F5E;
-      --cream: #FAF8F2;
-      --white: #FFFFFF;
-      --text: #1A1A2E;
-      --muted: #5A5A7A;
+      --gold: #B8860B; --gold-light: #F5E6A3; --gold-dark: #7A5800;
+      --navy: #0D1B3E; --navy-light: #1A2F5E;
+      --cream: #FAF8F2; --white: #FFFFFF;
+      --text: #1A1A2E; --muted: #5A5A7A;
       --border: rgba(184,134,11,0.2);
-      --danger: #C0392B;
-      --success: #1E6B3C;
+      --danger: #C0392B; --success: #1E6B3C;
       --radius: 12px;
     }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* HEADER */
     header {
-      background: var(--navy);
-      padding: 1.5rem 2rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      background: var(--navy); padding: 1.5rem 2rem; text-align: center; position: relative; overflow: hidden;
     }
     header::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(184,134,11,0.03) 0px,
-        rgba(184,134,11,0.03) 1px,
-        transparent 1px,
-        transparent 20px
-      );
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(45deg, rgba(184,134,11,0.03) 0px, rgba(184,134,11,0.03) 1px, transparent 1px, transparent 20px);
     }
-    .header-badge {
-      display: inline-block;
-      background: rgba(184,134,11,0.15);
-      border: 1px solid rgba(184,134,11,0.4);
-      color: var(--gold-light);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 4px 16px;
-      border-radius: 100px;
-      margin-bottom: 12px;
+    .badge {
+      display: inline-block; background: rgba(184,134,11,0.15); border: 1px solid rgba(184,134,11,0.4);
+      color: var(--gold-light); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 16px; border-radius: 100px; margin-bottom: 10px;
     }
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      color: var(--white);
-      font-size: clamp(1.4rem, 4vw, 2rem);
-      line-height: 1.3;
-    }
+    header h1 { font-family: 'Playfair Display', serif; color: var(--white); font-size: clamp(1.3rem, 4vw, 1.9rem); line-height: 1.3; }
     header h1 span { color: var(--gold-light); }
-    header p {
-      color: rgba(255,255,255,0.6);
-      font-size: 13px;
-      margin-top: 6px;
-    }
+    header p { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 6px; }
 
-    /* MAIN CONTAINER */
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
 
-    /* SCREEN: LOGIN */
-    #screen-login {
-      max-width: 420px;
-      margin: 3rem auto;
+    /* LOADING */
+    #screen-loading { text-align: center; padding: 4rem 1rem; }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid rgba(13,27,62,0.1);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
     }
-    .login-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2.5rem;
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #screen-loading p { color: var(--muted); font-size: 14px; }
+
+    /* LOGIN */
+    #screen-login { max-width: 420px; margin: 3rem auto; display: none; }
+    .card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem;
       box-shadow: 0 4px 32px rgba(13,27,62,0.07);
     }
-    .login-card h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      margin-bottom: 6px;
-      color: var(--navy);
-    }
-    .login-card p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 1.5rem;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 6px;
-      letter-spacing: 0.03em;
-    }
+    .card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--navy); margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: 14px; margin-bottom: 1.5rem; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
     input[type="text"] {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid rgba(13,27,62,0.15);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      background: var(--cream);
-      transition: border-color 0.2s;
-      outline: none;
+      width: 100%; padding: 12px 16px; border: 1.5px solid rgba(13,27,62,0.15);
+      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+      color: var(--text); background: var(--cream); outline: none; transition: border-color 0.2s;
     }
-    input[type="text"]:focus {
-      border-color: var(--gold);
-      background: var(--white);
-    }
+    input[type="text"]:focus { border-color: var(--gold); background: var(--white); }
     .btn-primary {
-      display: block;
-      width: 100%;
-      margin-top: 1rem;
-      padding: 13px;
-      background: var(--navy);
-      color: var(--white);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      display: block; width: 100%; margin-top: 1rem; padding: 13px;
+      background: var(--navy); color: var(--white); border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, transform 0.1s;
     }
     .btn-primary:hover { background: var(--navy-light); }
-    .btn-primary:active { transform: scale(0.98); }
-    .error-msg {
-      background: #FDECEA;
-      border: 1px solid #F5B7B1;
-      color: var(--danger);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px;
-      margin-top: 12px;
-      display: none;
-    }
+    .btn-primary:disabled { background: rgba(13,27,62,0.2); cursor: not-allowed; }
+    .msg-error { background: #FDECEA; border: 1px solid #F5B7B1; color: var(--danger); border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none; }
+    .msg-info  { background: #EAF4FB; border: 1px solid #AED6F1; color: #1A5276; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none; }
 
-    /* SCREEN: VOTING */
+    /* VOTING */
     #screen-voting { display: none; }
     .vote-header {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
-    .vote-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      color: var(--navy);
-    }
+    .vote-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--navy); }
     .vote-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .vote-counter {
-      background: var(--navy);
-      color: var(--white);
-      border-radius: 100px;
-      padding: 6px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      white-space: nowrap;
+    .counter {
+      background: var(--navy); color: var(--white); border-radius: 100px;
+      padding: 6px 18px; font-size: 14px; font-weight: 600; white-space: nowrap;
     }
-    .vote-counter span { color: var(--gold-light); }
+    .counter span { color: var(--gold-light); }
 
-    /* CANDIDATE GRID */
     .candidates-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
     }
     .candidate-card {
-      background: var(--white);
-      border: 2px solid transparent;
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      position: relative;
+      background: var(--white); border: 2px solid transparent; border-radius: var(--radius);
+      padding: 1.25rem; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; gap: 1rem; position: relative;
     }
-    .candidate-card:hover {
-      border-color: rgba(184,134,11,0.4);
-      box-shadow: 0 2px 16px rgba(13,27,62,0.06);
-    }
-    .candidate-card.selected {
-      border-color: var(--gold);
-      background: #FFFDF0;
-      box-shadow: 0 2px 20px rgba(184,134,11,0.12);
-    }
-    .candidate-card.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .candidate-card:hover { border-color: rgba(184,134,11,0.4); box-shadow: 0 2px 16px rgba(13,27,62,0.06); }
+    .candidate-card.selected { border-color: var(--gold); background: #FFFDF0; }
+    .candidate-card.disabled { opacity: 0.45; cursor: not-allowed; }
     .candidate-card.disabled:hover { border-color: transparent; box-shadow: none; }
-    .candidate-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: var(--navy);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      color: var(--gold-light);
-      flex-shrink: 0;
+    .avatar {
+      width: 58px; height: 58px; border-radius: 50%; background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold-light); flex-shrink: 0;
     }
-    .candidate-info h3 {
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--navy);
-      margin-bottom: 3px;
+    .cinfo h3 { font-weight: 600; font-size: 15px; color: var(--navy); margin-bottom: 3px; }
+    .cinfo p  { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .cno { position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 600; color: var(--muted); }
+    .chk {
+      position: absolute; top: -8px; right: -8px; width: 24px; height: 24px;
+      background: var(--gold); border-radius: 50%; display: none;
+      align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;
     }
-    .candidate-info p {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-    .candidate-no {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    .check-icon {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 24px;
-      height: 24px;
-      background: var(--gold);
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .check-icon::after {
-      content: '✓';
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-    }
-    .candidate-card.selected .check-icon { display: flex; }
+    .candidate-card.selected .chk { display: flex; }
 
-    /* SUBMIT BAR */
     .submit-bar {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
     }
     .submit-bar p { font-size: 14px; color: var(--muted); }
     .submit-bar p strong { color: var(--navy); }
     .btn-submit {
-      padding: 12px 28px;
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
+      padding: 12px 28px; background: var(--gold); color: var(--navy);
+      border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s;
     }
     .btn-submit:hover { background: #c9970e; }
-    .btn-submit:disabled {
-      background: rgba(13,27,62,0.1);
-      color: var(--muted);
-      cursor: not-allowed;
-    }
+    .btn-submit:disabled { background: rgba(13,27,62,0.1); color: var(--muted); cursor: not-allowed; }
 
-    /* SCREEN: DONE */
-    #screen-done {
-      display: none;
-      max-width: 520px;
-      margin: 3rem auto;
-      text-align: center;
-    }
-    .done-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 3rem 2rem;
-    }
+    /* DONE */
+    #screen-done { display: none; max-width: 520px; margin: 3rem auto; text-align: center; }
     .done-icon {
-      width: 72px;
-      height: 72px;
-      background: #EAF7EE;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 2rem;
+      width: 72px; height: 72px; background: #EAF7EE; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 2rem;
     }
-    .done-card h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      color: var(--navy);
-      margin-bottom: 8px;
-    }
-    .done-card p { color: var(--muted); font-size: 14px; margin-bottom: 1rem; }
-    .chosen-list {
-      text-align: left;
-      background: var(--cream);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin: 1.5rem 0;
-    }
+    #screen-done h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 8px; }
+    #screen-done p { color: var(--muted); font-size: 14px; }
+    .chosen-list { text-align: left; background: var(--cream); border-radius: 8px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
     .chosen-list h4 { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-    .chosen-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--navy);
-    }
+    .chosen-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--navy); }
     .chosen-item:last-child { border-bottom: none; }
-    .chosen-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--gold);
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ADMIN LINK */
-    .admin-link {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .admin-link a {
-      color: var(--navy);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .admin-link a:hover { text-decoration: underline; }
+    .dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
 
     /* MODAL */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(13,27,62,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 1rem;
+      position: fixed; inset: 0; background: rgba(13,27,62,0.6);
+      display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem;
     }
     .modal-overlay.active { display: flex; }
-    .modal {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 2rem;
-      max-width: 440px;
-      width: 100%;
-    }
-    .modal h3 {
-      font-family: 'Playfair Display', serif;
-      color: var(--navy);
-      margin-bottom: 8px;
-    }
+    .modal { background: var(--white); border-radius: var(--radius); padding: 2rem; max-width: 440px; width: 100%; }
+    .modal h3 { font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 8px; }
     .modal p { color: var(--muted); font-size: 14px; margin-bottom: 1.5rem; }
     .modal ul { margin: 0 0 1.5rem 1.25rem; }
     .modal ul li { font-size: 14px; color: var(--navy); padding: 3px 0; }
-    .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
     .btn-outline {
-      padding: 10px 20px;
-      border: 1.5px solid rgba(13,27,62,0.2);
-      background: transparent;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      color: var(--navy);
+      padding: 10px 20px; border: 1.5px solid rgba(13,27,62,0.2);
+      background: transparent; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; cursor: pointer; color: var(--navy);
     }
     .btn-outline:hover { background: var(--cream); }
+
+    .admin-link { text-align: center; margin-top: 2rem; font-size: 13px; color: var(--muted); }
+    .admin-link a { color: var(--navy); text-decoration: none; font-weight: 500; }
+    .admin-link a:hover { text-decoration: underline; }
 
     @media (max-width: 500px) {
       .candidates-grid { grid-template-columns: 1fr; }
@@ -428,49 +179,50 @@
 <body>
 
 <header>
-  <div class="header-badge">Sistem Pengundian Elektronik</div>
+  <div class="badge">Sistem Pengundian Elektronik</div>
   <h1>Pencalonan <span>Ahli Lembaga</span> Koperasi</h1>
-  <p>Sesi Pengundian Rasmi — Pilih 4 calon daripada 6 calon</p>
+  <p>Pilih 4 calon daripada 6 calon</p>
 </header>
 
-<!-- LOGIN SCREEN -->
-<div class="container" id="screen-login">
-  <div class="login-card">
-    <h2>Pengesahan Pengundi</h2>
-    <p>Sila masukkan nombor Kad Pengenalan anda untuk meneruskan pengundian.</p>
-    <label for="ic-input">Nombor Kad Pengenalan (tanpa sempang)</label>
-    <input type="text" id="ic-input" placeholder="Contoh: 901231045678" maxlength="12" inputmode="numeric" />
-    <div class="error-msg" id="login-error"></div>
-    <button class="btn-primary" onclick="doLogin()">Teruskan ke Pengundian →</button>
-  </div>
-  <div class="admin-link">
-    <a href="admin.html">Halaman Pentadbir (Keputusan)</a>
-  </div>
+<!-- LOADING -->
+<div class="container" id="screen-loading">
+  <div class="spinner"></div>
+  <p>Menyambung ke pangkalan data...</p>
 </div>
 
-<!-- VOTING SCREEN -->
+<!-- LOGIN -->
+<div class="container" id="screen-login">
+  <div class="card">
+    <h2>Pengesahan Pengundi</h2>
+    <p>Masukkan nombor Kad Pengenalan anda (12 digit, tanpa sempang).</p>
+    <label for="ic-input">Nombor Kad Pengenalan</label>
+    <input type="text" id="ic-input" placeholder="Contoh: 901231045678" maxlength="12" inputmode="numeric" />
+    <div class="msg-error" id="login-error"></div>
+    <div class="msg-info"  id="login-info"></div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Teruskan ke Pengundian →</button>
+  </div>
+  <div class="admin-link"><a href="admin.html">Halaman Pentadbir</a></div>
+</div>
+
+<!-- VOTING -->
 <div class="container" id="screen-voting">
   <div class="vote-header">
     <div>
       <h2>Pilih 4 Calon Anda</h2>
-      <p id="voter-ic-display"></p>
+      <p id="voter-display"></p>
     </div>
-    <div class="vote-counter">Dipilih: <span id="count-display">0</span> / 4</div>
+    <div class="counter">Dipilih: <span id="count-display">0</span> / 4</div>
   </div>
-
-  <div class="candidates-grid" id="candidates-grid">
-    <!-- Candidates injected by JS -->
-  </div>
-
+  <div class="candidates-grid" id="candidates-grid"></div>
   <div class="submit-bar">
     <p>Anda mesti memilih tepat <strong>4 calon</strong> sebelum menghantar undi.</p>
     <button class="btn-submit" id="submit-btn" onclick="openConfirm()" disabled>Hantar Undi</button>
   </div>
 </div>
 
-<!-- DONE SCREEN -->
+<!-- DONE -->
 <div class="container" id="screen-done">
-  <div class="done-card">
+  <div class="card" style="text-align:center; padding: 3rem 2rem;">
     <div class="done-icon">✅</div>
     <h2>Undi Berjaya Dihantar!</h2>
     <p>Terima kasih kerana mengundi. Pilihan anda telah direkodkan.</p>
@@ -486,151 +238,201 @@
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal">
     <h3>Sahkan Undi Anda</h3>
-    <p>Anda akan mengundi calon-calon berikut. Tindakan ini tidak boleh dibatalkan.</p>
+    <p>Anda akan mengundi calon-calon berikut. Tindakan ini <strong>tidak boleh dibatalkan</strong>.</p>
     <ul id="confirm-list"></ul>
-    <div class="modal-buttons">
+    <div class="modal-btns">
       <button class="btn-outline" onclick="closeConfirm()">Kembali</button>
-      <button class="btn-submit" onclick="submitVote()">Ya, Hantar Undi</button>
+      <button class="btn-submit" id="confirm-submit-btn" onclick="submitVote()">Ya, Hantar Undi</button>
     </div>
   </div>
 </div>
 
-<script>
-  // ── CANDIDATE DATA ─ Edit names/positions here ──────────────────────
-  const CANDIDATES = [
-    { id: 1, name: "Ahmad Fadzillah bin Hamid",    position: "Peniaga / Usahawan",         initials: "AF" },
-    { id: 2, name: "Siti Aminah binti Kamarudin",  position: "Guru / Pendidik",             initials: "SA" },
-    { id: 3, name: "Mohd Razif bin Abdullah",       position: "Jurutera / Profesional",      initials: "MR" },
-    { id: 4, name: "Norliza binti Yusoff",          position: "Akauntan / Kewangan",         initials: "NY" },
-    { id: 5, name: "Zulkifli bin Nordin",           position: "Pegawai Kerajaan / Pesara",   initials: "ZN" },
-    { id: 6, name: "Rosnah binti Saad",             position: "Usahawan / Pengurusan",       initials: "RS" },
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ══════════════════════════════════════════════════════════════
+  // 🔧 LANGKAH 1: TAMPAL FIREBASE CONFIG ANDA DI SINI
+  // ══════════════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey:            "GANTI_DENGAN_API_KEY_ANDA",
+    authDomain:        "GANTI_DENGAN_AUTH_DOMAIN",
+    projectId:         "GANTI_DENGAN_PROJECT_ID",
+    storageBucket:     "GANTI_DENGAN_STORAGE_BUCKET",
+    messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID",
+    appId:             "GANTI_DENGAN_APP_ID"
+  };
+  // ══════════════════════════════════════════════════════════════
+
+  // ══════════════════════════════════════════════════════════════
+  // 🔧 LANGKAH 2: EDIT NAMA CALON DI SINI
+  // ══════════════════════════════════════════════════════════════
+  window.CANDIDATES = [
+    { id: "c1", name: "Ahmad Fadzillah bin Hamid",   position: "Peniaga / Usahawan",       initials: "AF" },
+    { id: "c2", name: "Siti Aminah binti Kamarudin", position: "Guru / Pendidik",           initials: "SA" },
+    { id: "c3", name: "Mohd Razif bin Abdullah",      position: "Jurutera / Profesional",    initials: "MR" },
+    { id: "c4", name: "Norliza binti Yusoff",         position: "Akauntan / Kewangan",       initials: "NY" },
+    { id: "c5", name: "Zulkifli bin Nordin",          position: "Pegawai Kerajaan / Pesara", initials: "ZN" },
+    { id: "c6", name: "Rosnah binti Saad",            position: "Usahawan / Pengurusan",     initials: "RS" },
   ];
+  // ══════════════════════════════════════════════════════════════
 
   const MAX_PICKS = 4;
-  const STORAGE_KEY = "koperasi_votes";
-  const VOTED_KEY   = "koperasi_voted";
+  let db, currentIC;
+  let selected = new Set();
 
-  let currentIC = "";
-  let selected   = new Set();
+  // Init Firebase
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    show("screen-login");
+    hide("screen-loading");
+  } catch (e) {
+    document.querySelector("#screen-loading p").textContent = "Ralat: Gagal menyambung. Semak Firebase config.";
+    console.error(e);
+  }
 
-  // ── RENDER CANDIDATES ────────────────────────────────────────────────
+  function show(id) { document.getElementById(id).style.display = "block"; }
+  function hide(id) { document.getElementById(id).style.display = "none"; }
+
+  // ── LOGIN ──────────────────────────────────────────────────────
+  window.doLogin = async function() {
+    const ic  = document.getElementById("ic-input").value.trim().replace(/[-\s]/g, "");
+    const err = document.getElementById("login-error");
+    const inf = document.getElementById("login-info");
+    const btn = document.getElementById("login-btn");
+    err.style.display = "none";
+    inf.style.display = "none";
+
+    if (!/^\d{12}$/.test(ic)) {
+      err.textContent = "Nombor IC tidak sah. Sila masukkan 12 digit tanpa sempang.";
+      err.style.display = "block"; return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Menyemak...";
+
+    try {
+      const voterRef = doc(db, "voters", ic);
+      const snap = await getDoc(voterRef);
+      if (snap.exists() && snap.data().voted) {
+        err.textContent = "Anda telah mengundi sebelum ini. Setiap pengundi hanya dibenarkan mengundi sekali.";
+        err.style.display = "block";
+        btn.disabled = false; btn.textContent = "Teruskan ke Pengundian →";
+        return;
+      }
+      currentIC = ic;
+      document.getElementById("voter-display").textContent =
+        "Pengundi: " + ic.replace(/(\d{6})(\d{2})(\d{4})/, "$1-$2-$3");
+      hide("screen-login");
+      renderCandidates();
+      show("screen-voting");
+    } catch(e) {
+      err.textContent = "Ralat sambungan. Cuba semula.";
+      err.style.display = "block";
+      btn.disabled = false; btn.textContent = "Teruskan ke Pengundian →";
+      console.error(e);
+    }
+  };
+
+  document.getElementById("ic-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") window.doLogin();
+  });
+
+  // ── RENDER CANDIDATES ──────────────────────────────────────────
   function renderCandidates() {
-    const grid = document.getElementById("candidates-grid");
-    grid.innerHTML = CANDIDATES.map(c => `
-      <div class="candidate-card" id="card-${c.id}" onclick="toggleCandidate(${c.id})">
-        <div class="candidate-avatar">${c.initials}</div>
-        <div class="candidate-info">
+    document.getElementById("candidates-grid").innerHTML = window.CANDIDATES.map((c, i) => `
+      <div class="candidate-card" id="card-${c.id}" onclick="toggleCandidate('${c.id}')">
+        <div class="avatar">${c.initials}</div>
+        <div class="cinfo">
           <h3>${c.name}</h3>
           <p>${c.position}</p>
         </div>
-        <span class="candidate-no">Calon ${c.id}</span>
-        <div class="check-icon"></div>
+        <span class="cno">Calon ${i+1}</span>
+        <div class="chk">✓</div>
       </div>
     `).join("");
   }
 
-  // ── LOGIN ────────────────────────────────────────────────────────────
-  function doLogin() {
-    const ic = document.getElementById("ic-input").value.trim().replace(/[-\s]/g, "");
-    const err = document.getElementById("login-error");
-
-    if (!/^\d{12}$/.test(ic)) {
-      showError("Nombor IC tidak sah. Sila masukkan 12 digit tanpa sempang.");
-      return;
-    }
-
-    const voted = JSON.parse(localStorage.getItem(VOTED_KEY) || "{}");
-    if (voted[ic]) {
-      showError("Anda telah mengundi sebelum ini. Setiap pengundi hanya dibenarkan mengundi sekali.");
-      return;
-    }
-
-    err.style.display = "none";
-    currentIC = ic;
-    document.getElementById("voter-ic-display").textContent = "Pengundi: " + ic.replace(/(\d{6})(\d{2})(\d{4})/, "$1-$2-$3");
-    document.getElementById("screen-login").style.display = "none";
-    document.getElementById("screen-voting").style.display = "block";
-    renderCandidates();
-  }
-
-  function showError(msg) {
-    const err = document.getElementById("login-error");
-    err.textContent = msg;
-    err.style.display = "block";
-  }
-
-  document.getElementById("ic-input").addEventListener("keydown", e => {
-    if (e.key === "Enter") doLogin();
-  });
-
-  // ── TOGGLE CANDIDATE ────────────────────────────────────────────────
-  function toggleCandidate(id) {
+  window.toggleCandidate = function(id) {
     const card = document.getElementById("card-" + id);
     if (card.classList.contains("disabled") && !selected.has(id)) return;
-
-    if (selected.has(id)) {
-      selected.delete(id);
-      card.classList.remove("selected");
-    } else {
+    if (selected.has(id)) { selected.delete(id); card.classList.remove("selected"); }
+    else {
       if (selected.size >= MAX_PICKS) return;
-      selected.add(id);
-      card.classList.add("selected");
+      selected.add(id); card.classList.add("selected");
     }
     updateUI();
-  }
+  };
 
   function updateUI() {
     const count = selected.size;
     document.getElementById("count-display").textContent = count;
     document.getElementById("submit-btn").disabled = count !== MAX_PICKS;
-
-    CANDIDATES.forEach(c => {
+    window.CANDIDATES.forEach(c => {
       const card = document.getElementById("card-" + c.id);
-      if (!selected.has(c.id) && count >= MAX_PICKS) {
-        card.classList.add("disabled");
-      } else {
-        card.classList.remove("disabled");
-      }
+      if (!selected.has(c.id) && count >= MAX_PICKS) card.classList.add("disabled");
+      else card.classList.remove("disabled");
     });
   }
 
-  // ── CONFIRM MODAL ───────────────────────────────────────────────────
-  function openConfirm() {
-    const names = [...selected].map(id => CANDIDATES.find(c => c.id === id).name);
+  // ── CONFIRM ────────────────────────────────────────────────────
+  window.openConfirm = function() {
+    const names = [...selected].map(id => window.CANDIDATES.find(c => c.id === id).name);
     document.getElementById("confirm-list").innerHTML = names.map(n => `<li>${n}</li>`).join("");
     document.getElementById("confirm-modal").classList.add("active");
-  }
-
-  function closeConfirm() {
+  };
+  window.closeConfirm = function() {
     document.getElementById("confirm-modal").classList.remove("active");
-  }
+  };
 
-  // ── SUBMIT VOTE ─────────────────────────────────────────────────────
-  function submitVote() {
-    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    const voted = JSON.parse(localStorage.getItem(VOTED_KEY)   || "{}");
+  // ── SUBMIT ─────────────────────────────────────────────────────
+  window.submitVote = async function() {
+    const btn = document.getElementById("confirm-submit-btn");
+    btn.disabled = true; btn.textContent = "Menghantar...";
 
-    // Tally votes
-    selected.forEach(id => {
-      votes[id] = (votes[id] || 0) + 1;
-    });
+    try {
+      // Mark voter as voted (atomic check via transaction approach)
+      const voterRef = doc(db, "voters", currentIC);
+      const snap = await getDoc(voterRef);
+      if (snap.exists() && snap.data().voted) {
+        alert("Anda telah mengundi sebelum ini.");
+        window.closeConfirm(); location.reload(); return;
+      }
 
-    // Mark IC as voted
-    voted[currentIC] = true;
+      // Write voter record
+      await setDoc(voterRef, { voted: true, votedAt: serverTimestamp(), ic: currentIC });
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
-    localStorage.setItem(VOTED_KEY,   JSON.stringify(voted));
+      // Increment vote counts
+      const voteRef = doc(db, "votes", "tally");
+      const updateData = {};
+      selected.forEach(id => { updateData[id] = increment(1); });
+      const tallySnap = await getDoc(voteRef);
+      if (tallySnap.exists()) { await updateDoc(voteRef, updateData); }
+      else { 
+        const init = {}; 
+        window.CANDIDATES.forEach(c => { init[c.id] = 0; });
+        selected.forEach(id => { init[id] = 1; });
+        await setDoc(voteRef, init);
+      }
 
-    // Show done screen
-    closeConfirm();
-    const chosenNames = [...selected].map(id => CANDIDATES.find(c => c.id === id));
-    document.getElementById("done-list").innerHTML = chosenNames.map(c => `
-      <div class="chosen-item"><div class="chosen-dot"></div><span>${c.name}</span></div>
-    `).join("");
+      // Show done screen
+      const chosen = [...selected].map(id => window.CANDIDATES.find(c => c.id === id));
+      document.getElementById("done-list").innerHTML = chosen.map(c =>
+        `<div class="chosen-item"><div class="dot"></div><span>${c.name}</span></div>`
+      ).join("");
+      window.closeConfirm();
+      hide("screen-voting");
+      show("screen-done");
 
-    document.getElementById("screen-voting").style.display = "none";
-    document.getElementById("screen-done").style.display = "block";
-  }
+    } catch(e) {
+      alert("Ralat semasa menghantar undi. Cuba semula.");
+      btn.disabled = false; btn.textContent = "Ya, Hantar Undi";
+      console.error(e);
+    }
+  };
 </script>
 </body>
 </html>
