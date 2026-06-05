@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keputusan Pengundian — Pentadbir</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #B8860B;
+      --gold-light: #F5E6A3;
+      --navy: #0D1B3E;
+      --navy-light: #1A2F5E;
+      --cream: #FAF8F2;
+      --white: #FFFFFF;
+      --text: #1A1A2E;
+      --muted: #5A5A7A;
+      --border: rgba(184,134,11,0.2);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--navy);
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(184,134,11,0.15);
+      border: 1px solid rgba(184,134,11,0.4);
+      color: var(--gold-light);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--white);
+      font-size: 1.6rem;
+    }
+    header h1 span { color: var(--gold-light); }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* AUTH SCREEN */
+    #screen-auth {
+      max-width: 360px;
+      margin: 3rem auto;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+    }
+    .auth-card h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .auth-card p { color: var(--muted); font-size: 13px; margin-bottom: 1.5rem; }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid rgba(13,27,62,0.15);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      background: var(--cream);
+      color: var(--text);
+      outline: none;
+    }
+    input[type="password"]:focus {
+      border-color: var(--gold);
+      background: var(--white);
+    }
+    .btn-primary {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 12px;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--navy-light); }
+    .err { color: #C0392B; font-size: 13px; margin-top: 8px; }
+
+    /* RESULTS SCREEN */
+    #screen-results { display: none; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      text-align: center;
+    }
+    .stat-card .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--navy);
+    }
+    .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .results-table {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .results-table h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--navy);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      text-align: left;
+      padding: 10px 1.25rem;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--cream);
+    }
+    td {
+      padding: 12px 1.25rem;
+      border-top: 1px solid rgba(13,27,62,0.06);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .rank-1 { background: #FFF3CD; color: #856404; }
+    .rank-2 { background: #E8E8E8; color: #444; }
+    .rank-3 { background: #FDEBD0; color: #784212; }
+    .rank-other { background: var(--cream); color: var(--muted); }
+
+    .bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bar-bg {
+      flex: 1;
+      height: 8px;
+      background: rgba(13,27,62,0.07);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--gold);
+      transition: width 0.6s ease;
+    }
+    .bar-pct {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .btn-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .btn-outline {
+      padding: 9px 18px;
+      border: 1.5px solid rgba(13,27,62,0.2);
+      background: var(--white);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    .btn-outline:hover { background: var(--cream); }
+    .btn-danger {
+      padding: 9px 18px;
+      border: 1.5px solid rgba(192,57,43,0.3);
+      background: transparent;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      color: #C0392B;
+    }
+    .btn-danger:hover { background: #FDECEA; }
+
+    .back-link { font-size: 13px; margin-top: 1.5rem; text-align: center; color: var(--muted); }
+    .back-link a { color: var(--navy); text-decoration: none; font-weight: 500; }
+    .back-link a:hover { text-decoration: underline; }
+
+    .voted-ics {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+    }
+    .voted-ics h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .ic-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ic-pill {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--navy);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">Pentadbir</div>
+  <h1>Keputusan <span>Pengundian</span></h1>
+</header>
+
+<!-- AUTH -->
+<div class="container" id="screen-auth">
+  <div class="auth-card">
+    <h2>Kawasan Pentadbir</h2>
+    <p>Masukkan kata laluan pentadbir untuk melihat keputusan pengundian.</p>
+    <label for="pw-input">Kata Laluan</label>
+    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()" />
+    <p class="err" id="auth-err" style="display:none">Kata laluan tidak sah.</p>
+    <button class="btn-primary" onclick="doAuth()">Log Masuk</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="container" id="screen-results">
+  <div class="btn-actions">
+    <button class="btn-outline" onclick="loadResults()">🔄 Muat Semula</button>
+    <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+    <button class="btn-danger" onclick="resetVotes()">🗑 Set Semula Semua Undian</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num" id="stat-total-voters">0</div>
+      <div class="lbl">Jumlah Pengundi</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-total-votes">0</div>
+      <div class="lbl">Jumlah Undi Dihantar</div>
+    </div>
+  </div>
+
+  <div class="results-table">
+    <h3>Keputusan Pengundian</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Kedudukan</th>
+          <th>Nama Calon</th>
+          <th>Undi</th>
+          <th style="min-width:150px">Peratusan</th>
+        </tr>
+      </thead>
+      <tbody id="results-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="voted-ics">
+    <h4>Senarai IC yang telah mengundi (<span id="voted-count">0</span>)</h4>
+    <div class="ic-pills" id="ic-pills"></div>
+  </div>
+
+  <div class="back-link">
+    <a href="index.html">← Kembali ke Halaman Pengundian</a>
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "admin123"; // ← TUKAR KATA LALUAN INI
+  const STORAGE_KEY    = "koperasi_votes";
+  const VOTED_KEY      = "koperasi_voted";
+
+  const CANDIDATES = [
+    { id: 1, name: "Ahmad Fadzillah bin Hamid" },
+    { id: 2, name: "Siti Aminah binti Kamarudin" },
+    { id: 3, name: "Mohd Razif bin Abdullah" },
+    { id: 4, name: "Norliza binti Yusoff" },
+    { id: 5, name: "Zulkifli bin Nordin" },
+    { id: 6, name: "Rosnah binti Saad" },
+  ];
+
+  function doAuth() {
+    const pw = document.getElementById("pw-input").value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById("screen-auth").style.display = "none";
+      document.getElementById("screen-results").style.display = "block";
+      loadResults();
+    } else {
+      document.getElementById("auth-err").style.display = "block";
+    }
+  }
+
+  function loadResults() {
+    const votes  = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const voted  = JSON.parse(localStorage.getItem(VOTED_KEY)   || "{}");
+    const voterCount = Object.keys(voted).length;
+    const totalVotes = Object.values(votes).reduce((a,b) => a+b, 0);
+
+    document.getElementById("stat-total-voters").textContent = voterCount;
+    document.getElementById("stat-total-votes").textContent  = totalVotes;
+
+    const ranked = CANDIDATES
+      .map(c => ({ ...c, votes: votes[c.id] || 0 }))
+      .sort((a,b) => b.votes - a.votes);
+
+    const maxVotes = ranked[0]?.votes || 1;
+    const rankClasses = ["rank-1","rank-2","rank-3"];
+
+    document.getElementById("results-tbody").innerHTML = ranked.map((c, i) => {
+      const pct = voterCount > 0 ? Math.round(c.votes / voterCount * 100) : 0;
+      const rc  = rankClasses[i] || "rank-other";
+      return `
+        <tr>
+          <td><span class="rank-badge ${rc}">${i+1}</span></td>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.votes}</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(c.votes/maxVotes*100)}%"></div></div>
+              <span class="bar-pct">${pct}%</span>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    // IC pills
+    const ics = Object.keys(voted);
+    document.getElementById("voted-count").textContent = ics.length;
+    document.getElementById("ic-pills").innerHTML = ics.map(ic =>
+      `<span class="ic-pill">${ic.replace(/(\d{6})(\d{2})(\d{4})/, "$1-$2-$3")}</span>`
+    ).join("") || "<span style='font-size:13px;color:var(--muted)'>Tiada pengundi lagi.</span>";
+  }
+
+  function exportCSV() {
+    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const voted = JSON.parse(localStorage.getItem(VOTED_KEY)   || "{}");
+    const voterCount = Object.keys(voted).length;
+
+    const ranked = CANDIDATES
+      .map(c => ({ ...c, votes: votes[c.id] || 0 }))
+      .sort((a,b) => b.votes - a.votes);
+
+    let csv = "Kedudukan,Nama Calon,Undi,Peratusan\n";
+    ranked.forEach((c,i) => {
+      const pct = voterCount > 0 ? (c.votes/voterCount*100).toFixed(1) : "0.0";
+      csv += `${i+1},"${c.name}",${c.votes},${pct}%\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = "keputusan_pengundian.csv";
+    a.click();
+  }
+
+  function resetVotes() {
+    if (!confirm("AMARAN: Ini akan memadam SEMUA undian dan rekod IC. Teruskan?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(VOTED_KEY);
+    loadResults();
+    alert("Semua undian telah dipadamkan.");
+  }
+</script>
+</body>
+</html>
