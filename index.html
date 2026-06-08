@@ -3,284 +3,696 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pengundian Ahli Lembaga Koperasi</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>Pengundian Ahli Lembaga — KoIKMa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --gold: #B8860B; --gold-light: #F5E6A3; --gold-dark: #7A5800;
-      --navy: #0D1B3E; --navy-light: #1A2F5E;
-      --cream: #FAF8F2; --white: #FFFFFF;
-      --text: #1A1A2E; --muted: #5A5A7A;
-      --border: rgba(184,134,11,0.2);
-      --danger: #C0392B; --success: #1E6B3C;
-      --radius: 12px;
+      --obsidian: #070B14;
+      --deep: #0C1220;
+      --navy: #0F1B35;
+      --navy-mid: #162444;
+      --gold: #C9940A;
+      --gold-light: #E8B84B;
+      --gold-pale: #F5E6A3;
+      --gold-dim: rgba(201,148,10,0.15);
+      --gold-glow: rgba(201,148,10,0.35);
+      --white: #FFFFFF;
+      --off-white: #F0EDE6;
+      --muted: #8A90A0;
+      --border: rgba(201,148,10,0.18);
+      --border-bright: rgba(201,148,10,0.5);
+      --red: #B03030;
+      --green: #1E7A45;
+      --radius: 16px;
     }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
 
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--obsidian);
+      color: var(--off-white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── AMBIENT BACKGROUND ──────────────────────────── */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .bg-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(120px); opacity: 0.12;
+    }
+    .bg-orb-1 { width: 700px; height: 700px; background: var(--gold); top: -200px; left: -200px; animation: drift1 18s ease-in-out infinite alternate; }
+    .bg-orb-2 { width: 500px; height: 500px; background: #1A3A8F; bottom: -100px; right: -100px; animation: drift2 22s ease-in-out infinite alternate; }
+    .bg-orb-3 { width: 300px; height: 300px; background: var(--gold-light); top: 50%; left: 55%; animation: drift3 14s ease-in-out infinite alternate; }
+
+    @keyframes drift1 { to { transform: translate(80px, 60px); } }
+    @keyframes drift2 { to { transform: translate(-60px, -80px); } }
+    @keyframes drift3 { to { transform: translate(40px, -60px) scale(1.2); } }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,148,10,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,148,10,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── HEADER ──────────────────────────────────────── */
     header {
-      background: var(--navy); padding: 1.5rem 2rem; text-align: center; position: relative; overflow: hidden;
+      position: relative; z-index: 10;
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(7,11,20,0.95), rgba(7,11,20,0.6));
+      backdrop-filter: blur(20px);
     }
-    header::before {
-      content: ''; position: absolute; inset: 0;
-      background: repeating-linear-gradient(45deg, rgba(184,134,11,0.03) 0px, rgba(184,134,11,0.03) 1px, transparent 1px, transparent 20px);
-    }
-    .badge {
-      display: inline-block; background: rgba(184,134,11,0.15); border: 1px solid rgba(184,134,11,0.4);
-      color: var(--gold-light); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 4px 16px; border-radius: 100px; margin-bottom: 10px;
-    }
-    header h1 { font-family: 'Playfair Display', serif; color: var(--white); font-size: clamp(1.3rem, 4vw, 1.9rem); line-height: 1.3; }
-    header h1 span { color: var(--gold-light); }
-    header p { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 6px; }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    .header-inner { max-width: 700px; margin: 0 auto; }
 
-    /* LOADING */
-    #screen-loading { text-align: center; padding: 4rem 1rem; }
-    .spinner {
-      width: 40px; height: 40px; border: 3px solid rgba(13,27,62,0.1);
-      border-top-color: var(--gold); border-radius: 50%;
-      animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+    .logo-lockup {
+      display: flex; align-items: center; justify-content: center;
+      gap: 18px; margin-bottom: 1.5rem;
+      animation: fadeSlideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .logo-lockup img { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(201,148,10,0.4)); }
+    .logo-text { text-align: left; }
+    .logo-text .org-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gold-light);
+      line-height: 1.5;
+    }
+    .logo-text .org-sub {
+      font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-top: 2px;
+    }
+
+    .gold-rule {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 1.25rem;
+      animation: fadeIn 1.2s 0.3s both;
+    }
+
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--gold-dim); border: 1px solid var(--border-bright);
+      color: var(--gold-pale); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 5px 18px; border-radius: 100px; margin-bottom: 1.25rem;
+      animation: fadeSlideDown 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .badge-dot { width: 6px; height: 6px; background: var(--gold-light); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700; line-height: 1.15;
+      color: var(--white); margin-bottom: 8px;
+      animation: fadeSlideDown 0.8s 0.25s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    header h1 em { font-style: italic; color: var(--gold-light); }
+
+    header .subtitle {
+      color: var(--muted); font-size: 14px; font-weight: 400;
+      letter-spacing: 0.02em;
+      animation: fadeSlideDown 0.8s 0.35s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    /* ── CONTAINER ───────────────────────────────────── */
+    .container { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; position: relative; z-index: 10; }
+
+    /* ── LOADING ─────────────────────────────────────── */
+    #screen-loading {
+      text-align: center; padding: 6rem 1rem;
+    }
+    .loader-ring {
+      width: 52px; height: 52px; margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      animation: spin 0.9s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #screen-loading p { color: var(--muted); font-size: 14px; }
+    #screen-loading p { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
 
-    /* LOGIN */
-    #screen-login { max-width: 420px; margin: 3rem auto; display: none; }
-    .card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 2.5rem;
-      box-shadow: 0 4px 32px rgba(13,27,62,0.07);
+    /* ── LOGIN CARD ───────────────────────────────────── */
+    #screen-login { max-width: 480px; margin: 0 auto; display: none; }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(22,36,68,0.7), rgba(12,18,32,0.85));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem;
+      backdrop-filter: blur(24px);
+      box-shadow:
+        0 0 0 1px rgba(201,148,10,0.05) inset,
+        0 32px 80px rgba(0,0,0,0.5),
+        0 0 60px rgba(201,148,10,0.06);
+      animation: cardReveal 0.9s cubic-bezier(0.16,1,0.3,1) both;
     }
-    .card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--navy); margin-bottom: 6px; }
-    .card p { color: var(--muted); font-size: 14px; margin-bottom: 1.5rem; }
-    label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
-    input[type="text"] {
-      width: 100%; padding: 12px 16px; border: 1.5px solid rgba(13,27,62,0.15);
-      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px;
-      color: var(--text); background: var(--cream); outline: none; transition: border-color 0.2s;
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-    input[type="text"]:focus { border-color: var(--gold); background: var(--white); }
+
+    .card-icon {
+      width: 56px; height: 56px; margin: 0 auto 1.5rem;
+      background: var(--gold-dim); border: 1px solid var(--border-bright);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .glass-card h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem; font-weight: 700; color: var(--white);
+      text-align: center; margin-bottom: 6px;
+    }
+    .glass-card .desc {
+      text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.65;
+      margin-bottom: 2.25rem;
+    }
+
+    .field-label {
+      display: block; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold-light); margin-bottom: 10px;
+    }
+
+    /* OTP-style 5-box input */
+    .anggota-input-row {
+      display: flex; gap: 10px; justify-content: center; margin-bottom: 0.5rem;
+    }
+    .anggota-box {
+      width: 56px; height: 64px;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(201,148,10,0.25);
+      border-radius: 12px;
+      text-align: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--gold-light);
+      caret-color: var(--gold);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+      -webkit-appearance: none;
+    }
+    .anggota-box:focus {
+      border-color: var(--gold);
+      background: rgba(201,148,10,0.07);
+      box-shadow: 0 0 0 3px rgba(201,148,10,0.18), 0 4px 20px rgba(201,148,10,0.12);
+      transform: translateY(-2px);
+    }
+    .anggota-box.filled { border-color: rgba(201,148,10,0.5); }
+
+    .hint-text { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; margin-bottom: 1.75rem; }
+
+    .msg-error {
+      background: rgba(176,48,48,0.12); border: 1px solid rgba(176,48,48,0.35);
+      color: #F1948A; border-radius: 10px; padding: 12px 16px;
+      font-size: 13px; margin-bottom: 1rem; display: none;
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shake {
+      10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)}
+      30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)}
+    }
+    .msg-info {
+      background: rgba(30,100,180,0.12); border: 1px solid rgba(30,100,180,0.3);
+      color: #AED6F1; border-radius: 10px; padding: 12px 16px;
+      font-size: 13px; margin-bottom: 1rem; display: none;
+    }
+
     .btn-primary {
-      display: block; width: 100%; margin-top: 1rem; padding: 13px;
-      background: var(--navy); color: var(--white); border: none; border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: background 0.2s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--gold) 0%, #B07808 100%);
+      color: var(--obsidian); border: none; border-radius: 12px;
+      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.04em;
+      transition: all 0.25s; position: relative; overflow: hidden;
     }
-    .btn-primary:hover { background: var(--navy-light); }
-    .btn-primary:disabled { background: rgba(13,27,62,0.2); cursor: not-allowed; }
-    .msg-error { background: #FDECEA; border: 1px solid #F5B7B1; color: var(--danger); border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none; }
-    .msg-info  { background: #EAF4FB; border: 1px solid #AED6F1; color: #1A5276; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none; }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,148,10,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { background: rgba(201,148,10,0.2); color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-arrow { transition: transform 0.2s; }
+    .btn-primary:not(:disabled):hover .btn-arrow { transform: translateX(4px); }
 
-    /* VOTING */
+    .divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .admin-link {
+      text-align: center; font-size: 12px; color: var(--muted);
+    }
+    .admin-link a { color: var(--gold-light); text-decoration: none; font-weight: 500; }
+    .admin-link a:hover { color: var(--gold); }
+
+    /* ── VOTING SCREEN ───────────────────────────────── */
     #screen-voting { display: none; }
-    .vote-header {
-      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    }
-    .vote-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--navy); }
-    .vote-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .counter {
-      background: var(--navy); color: var(--white); border-radius: 100px;
-      padding: 6px 18px; font-size: 14px; font-weight: 600; white-space: nowrap;
-    }
-    .counter span { color: var(--gold-light); }
 
+    .vote-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 14px; margin-bottom: 2rem;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, rgba(22,36,68,0.6), rgba(12,18,32,0.7));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(16px);
+      animation: fadeSlideDown 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .voter-info { display: flex; flex-direction: column; gap: 3px; }
+    .voter-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-light); }
+    .voter-id { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--white); }
+
+    .pick-counter {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .pick-dots { display: flex; gap: 6px; }
+    .pick-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 1.5px solid rgba(201,148,10,0.35);
+      background: transparent;
+      transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    }
+    .pick-dot.lit {
+      background: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 8px rgba(201,148,10,0.6);
+      transform: scale(1.2);
+    }
+    .pick-label { font-size: 13px; color: var(--muted); }
+    .pick-label strong { color: var(--gold-pale); }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--off-white); letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+    }
+    .section-title span { color: var(--gold-light); }
+
+    /* ── CANDIDATE GRID ──────────────────────────────── */
     .candidates-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem; margin-bottom: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px; margin-bottom: 2rem;
     }
-    .candidate-card {
-      background: var(--white); border: 2px solid transparent; border-radius: var(--radius);
-      padding: 1.25rem; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
-      display: flex; align-items: center; gap: 1rem; position: relative;
-    }
-    .candidate-card:hover { border-color: rgba(184,134,11,0.4); box-shadow: 0 2px 16px rgba(13,27,62,0.06); }
-    .candidate-card.selected { border-color: var(--gold); background: #FFFDF0; }
-    .candidate-card.disabled { opacity: 0.45; cursor: not-allowed; }
-    .candidate-card.disabled:hover { border-color: transparent; box-shadow: none; }
-    .avatar {
-      width: 58px; height: 58px; border-radius: 50%; background: var(--navy);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold-light); flex-shrink: 0;
-    }
-    .cinfo h3 { font-weight: 600; font-size: 15px; color: var(--navy); margin-bottom: 3px; }
-    .cinfo p  { font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .cno { position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 600; color: var(--muted); }
-    .chk {
-      position: absolute; top: -8px; right: -8px; width: 24px; height: 24px;
-      background: var(--gold); border-radius: 50%; display: none;
-      align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;
-    }
-    .candidate-card.selected .chk { display: flex; }
 
+    .cand-card {
+      position: relative; cursor: pointer;
+      background: linear-gradient(135deg, rgba(22,36,68,0.55), rgba(12,18,32,0.65));
+      border: 1.5px solid rgba(201,148,10,0.15);
+      border-radius: 18px;
+      padding: 1.4rem 1.4rem 1.4rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, background 0.25s;
+      animation: cardReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;
+      overflow: hidden;
+    }
+    .cand-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(135deg, rgba(201,148,10,0.06), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .cand-card:hover { border-color: rgba(201,148,10,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,148,10,0.1); }
+    .cand-card:hover::before { opacity: 1; }
+    .cand-card.selected {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, rgba(201,148,10,0.12), rgba(12,18,32,0.75));
+      box-shadow: 0 8px 32px rgba(201,148,10,0.2), 0 0 0 1px rgba(201,148,10,0.2);
+    }
+    .cand-card.selected::before { opacity: 1; }
+    .cand-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .cand-avatar {
+      width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+      border: 1.5px solid rgba(201,148,10,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--gold-pale);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .cand-card.selected .cand-avatar {
+      border-color: var(--gold);
+      box-shadow: 0 0 16px rgba(201,148,10,0.3);
+    }
+
+    .cand-info { flex: 1; min-width: 0; }
+    .cand-name { font-weight: 600; font-size: 15px; color: var(--off-white); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cand-pos  { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .cand-number {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 10px; font-weight: 700; color: rgba(201,148,10,0.35);
+      letter-spacing: 0.08em;
+    }
+    .cand-card.selected .cand-number { color: rgba(201,148,10,0.6); }
+
+    .cand-check {
+      position: absolute; top: -6px; right: -6px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: var(--obsidian); font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0) rotate(-30deg);
+      transition: opacity 0.25s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 0 12px rgba(201,148,10,0.5);
+    }
+    .cand-card.selected .cand-check { opacity: 1; transform: scale(1) rotate(0deg); }
+
+    /* ── SUBMIT BAR ──────────────────────────────────── */
     .submit-bar {
-      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       gap: 1rem; flex-wrap: wrap;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, rgba(22,36,68,0.6), rgba(12,18,32,0.7));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(16px);
     }
-    .submit-bar p { font-size: 14px; color: var(--muted); }
-    .submit-bar p strong { color: var(--navy); }
+    .submit-info p { font-size: 13.5px; color: var(--muted); }
+    .submit-info p strong { color: var(--off-white); }
+    .submit-info .progress-track {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    }
+    .progress-bar {
+      flex: 1; height: 4px; background: rgba(201,148,10,0.15); border-radius: 2px; max-width: 120px;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .progress-text { font-size: 11px; color: var(--gold-light); font-weight: 600; }
+
     .btn-submit {
-      padding: 12px 28px; background: var(--gold); color: var(--navy);
-      border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap;
-      transition: background 0.2s;
+      padding: 13px 32px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gold) 0%, #9A6A00 100%);
+      color: var(--obsidian); border: none; border-radius: 12px;
+      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.03em;
+      transition: all 0.25s; position: relative; overflow: hidden;
     }
-    .btn-submit:hover { background: #c9970e; }
-    .btn-submit:disabled { background: rgba(13,27,62,0.1); color: var(--muted); cursor: not-allowed; }
+    .btn-submit::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn-submit:hover::before { opacity: 1; }
+    .btn-submit:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,148,10,0.45); }
+    .btn-submit:disabled { background: rgba(201,148,10,0.12); color: rgba(255,255,255,0.2); cursor: not-allowed; }
 
-    /* DONE */
-    #screen-done { display: none; max-width: 520px; margin: 3rem auto; text-align: center; }
-    .done-icon {
-      width: 72px; height: 72px; background: #EAF7EE; border-radius: 50%;
+    /* ── DONE SCREEN ─────────────────────────────────── */
+    #screen-done { display: none; max-width: 540px; margin: 0 auto; }
+
+    .done-card {
+      background: linear-gradient(135deg, rgba(22,36,68,0.7), rgba(12,18,32,0.85));
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 3.5rem 2.5rem;
+      backdrop-filter: blur(24px);
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(201,148,10,0.06);
+      animation: cardReveal 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .done-icon-ring {
+      width: 90px; height: 90px; margin: 0 auto 2rem;
+      border-radius: 50%; position: relative;
+      background: radial-gradient(circle at 35% 35%, rgba(30,122,69,0.25), rgba(30,122,69,0.08));
+      border: 1.5px solid rgba(30,122,69,0.4);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.5rem; font-size: 2rem;
+      font-size: 2.25rem;
+      animation: popIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
     }
-    #screen-done h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 8px; }
-    #screen-done p { color: var(--muted); font-size: 14px; }
-    .chosen-list { text-align: left; background: var(--cream); border-radius: 8px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
-    .chosen-list h4 { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-    .chosen-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--navy); }
-    .chosen-item:last-child { border-bottom: none; }
-    .dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    .done-icon-ring::before {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%;
+      border: 1px solid rgba(30,122,69,0.2);
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+    @keyframes ringPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:0.4} }
+    @keyframes popIn { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
 
-    /* MODAL */
+    .done-card h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700; color: var(--white);
+      margin-bottom: 8px;
+    }
+    .done-card .done-desc { color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 2rem; }
+
+    .chosen-panel {
+      text-align: left;
+      background: rgba(201,148,10,0.06);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .chosen-panel h4 {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold-light); margin-bottom: 12px;
+    }
+    .chosen-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 9px 0; border-bottom: 1px solid rgba(201,148,10,0.1);
+      font-size: 14px; color: var(--off-white); font-weight: 500;
+    }
+    .chosen-item:last-child { border-bottom: none; }
+    .chosen-item-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px rgba(201,148,10,0.5); }
+    .chosen-item-num { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    .done-note { font-size: 12px; color: var(--muted); }
+
+    /* ── MODAL ───────────────────────────────────────── */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(13,27,62,0.6);
-      display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem;
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(7,11,20,0.85);
+      backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 1rem;
     }
     .modal-overlay.active { display: flex; }
-    .modal { background: var(--white); border-radius: var(--radius); padding: 2rem; max-width: 440px; width: 100%; }
-    .modal h3 { font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 8px; }
-    .modal p { color: var(--muted); font-size: 14px; margin-bottom: 1.5rem; }
-    .modal ul { margin: 0 0 1.5rem 1.25rem; }
-    .modal ul li { font-size: 14px; color: var(--navy); padding: 3px 0; }
-    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-outline {
-      padding: 10px 20px; border: 1.5px solid rgba(13,27,62,0.2);
-      background: transparent; border-radius: 8px; font-family: 'DM Sans', sans-serif;
-      font-size: 14px; cursor: pointer; color: var(--navy);
+
+    .modal-box {
+      background: linear-gradient(135deg, rgba(22,36,68,0.95), rgba(12,18,32,0.98));
+      border: 1px solid var(--border-bright);
+      border-radius: 22px; padding: 2.5rem;
+      max-width: 460px; width: 100%;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,148,10,0.08) inset;
+      animation: cardReveal 0.4s cubic-bezier(0.16,1,0.3,1) both;
     }
-    .btn-outline:hover { background: var(--cream); }
 
-    .admin-link { text-align: center; margin-top: 2rem; font-size: 13px; color: var(--muted); }
-    .admin-link a { color: var(--navy); text-decoration: none; font-weight: 500; }
-    .admin-link a:hover { text-decoration: underline; }
+    .modal-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--white); margin-bottom: 6px;
+    }
+    .modal-box .modal-desc { color: var(--muted); font-size: 13.5px; line-height: 1.65; margin-bottom: 1.5rem; }
+    .modal-box .modal-desc strong { color: var(--gold-pale); }
 
-    @media (max-width: 500px) {
+    .modal-candidates { margin-bottom: 1.75rem; }
+    .modal-cand-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; margin-bottom: 8px;
+      background: rgba(201,148,10,0.07);
+      border: 1px solid rgba(201,148,10,0.15);
+      border-radius: 10px;
+      font-size: 14px; font-weight: 500; color: var(--off-white);
+    }
+    .modal-cand-icon { font-size: 16px; }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-ghost {
+      padding: 11px 22px; border: 1.5px solid rgba(201,148,10,0.25);
+      background: transparent; border-radius: 10px;
+      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; color: var(--muted);
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(201,148,10,0.5); color: var(--off-white); background: rgba(201,148,10,0.06); }
+
+    /* ── ANIMATIONS ──────────────────────────────────── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    /* Stagger cards */
+    .cand-card:nth-child(1) { animation-delay: 0.05s; }
+    .cand-card:nth-child(2) { animation-delay: 0.10s; }
+    .cand-card:nth-child(3) { animation-delay: 0.15s; }
+    .cand-card:nth-child(4) { animation-delay: 0.20s; }
+    .cand-card:nth-child(5) { animation-delay: 0.25s; }
+    .cand-card:nth-child(6) { animation-delay: 0.30s; }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 560px) {
       .candidates-grid { grid-template-columns: 1fr; }
-      .vote-header { flex-direction: column; align-items: flex-start; }
+      .glass-card, .done-card { padding: 2rem 1.5rem; }
+      .vote-topbar, .submit-bar { flex-direction: column; align-items: flex-start; }
+      .anggota-box { width: 48px; height: 58px; font-size: 1.3rem; }
     }
   </style>
 </head>
 <body>
 
+<!-- Ambient background -->
+<div class="bg-canvas">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  <div class="bg-grid"></div>
+</div>
+
+<!-- HEADER -->
 <header>
-  <div class="badge">Sistem Pengundian Elektronik</div>
-  <h1>Pencalonan <span>Ahli Lembaga</span> Koperasi</h1>
-  <p>Pilih 4 calon daripada 6 calon</p>
+  <div class="header-inner">
+    <div class="logo-lockup">
+      <img src="logo.png" alt="KoIKMa" />
+      <div class="logo-text">
+        <div class="org-name">Koperasi Warga Institut<br>Koperasi Malaysia Berhad</div>
+        <div class="org-sub">KoIKMa · Mesyuarat Agung Tahunan</div>
+      </div>
+    </div>
+    <div class="badge-pill"><div class="badge-dot"></div>Sistem Pengundian Elektronik</div>
+    <h1>Pemilihan <em>Ahli Lembaga</em> Koperasi</h1>
+    <p class="subtitle">Pilih 4 daripada 6 calon yang tersenarai · Setiap undi adalah rahsia</p>
+  </div>
 </header>
 
 <!-- LOADING -->
 <div class="container" id="screen-loading">
-  <div class="spinner"></div>
-  <p>Menyambung ke pangkalan data...</p>
+  <div class="loader-ring"></div>
+  <p>Menyambung ke sistem...</p>
 </div>
 
 <!-- LOGIN -->
 <div class="container" id="screen-login">
-  <div class="card">
+  <div class="glass-card">
+    <div class="card-icon">🗳️</div>
     <h2>Pengesahan Pengundi</h2>
-    <p>Masukkan nombor Kad Pengenalan anda (12 digit, tanpa sempang).</p>
-    <label for="ic-input">Nombor Kad Pengenalan</label>
-    <input type="text" id="ic-input" placeholder="Contoh: 901231045678" maxlength="12" inputmode="numeric" />
+    <p class="desc">Masukkan 5 digit Nombor Anggota anda untuk mengakses sistem pengundian selamat.</p>
+
+    <label class="field-label">Nombor Anggota (5 Digit)</label>
+    <div class="anggota-input-row" id="anggota-boxes"></div>
+    <p class="hint-text">Taip digit satu per satu atau tampal nombor anda</p>
+
     <div class="msg-error" id="login-error"></div>
     <div class="msg-info"  id="login-info"></div>
-    <button class="btn-primary" id="login-btn" onclick="doLogin()">Teruskan ke Pengundian →</button>
+
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">
+      Teruskan ke Pengundian
+      <span class="btn-arrow">→</span>
+    </button>
+
+    <div class="divider"><div class="divider-line"></div><div class="divider-text">atau</div><div class="divider-line"></div></div>
+    <div class="admin-link"><a href="admin.html">⚙ Halaman Pentadbir</a></div>
   </div>
-  <div class="admin-link"><a href="admin.html">Halaman Pentadbir</a></div>
 </div>
 
 <!-- VOTING -->
 <div class="container" id="screen-voting">
-  <div class="vote-header">
-    <div>
-      <h2>Pilih 4 Calon Anda</h2>
-      <p id="voter-display"></p>
+  <div class="vote-topbar">
+    <div class="voter-info">
+      <div class="voter-label">Pengundi Disahkan</div>
+      <div class="voter-id" id="voter-display">—</div>
     </div>
-    <div class="counter">Dipilih: <span id="count-display">0</span> / 4</div>
+    <div class="pick-counter">
+      <div class="pick-dots" id="pick-dots"></div>
+      <div class="pick-label">Dipilih: <strong id="count-display">0</strong> / 4</div>
+    </div>
   </div>
+
+  <p class="section-title">Senarai Calon — <span>Pilih tepat 4</span></p>
   <div class="candidates-grid" id="candidates-grid"></div>
+
   <div class="submit-bar">
-    <p>Anda mesti memilih tepat <strong>4 calon</strong> sebelum menghantar undi.</p>
-    <button class="btn-submit" id="submit-btn" onclick="openConfirm()" disabled>Hantar Undi</button>
+    <div class="submit-info">
+      <p>Anda mesti memilih tepat <strong>4 calon</strong> sebelum menghantar undi.</p>
+      <div class="progress-track">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-text" id="progress-text">0 / 4</div>
+      </div>
+    </div>
+    <button class="btn-submit" id="submit-btn" onclick="openConfirm()" disabled>Hantar Undi →</button>
   </div>
 </div>
 
 <!-- DONE -->
 <div class="container" id="screen-done">
-  <div class="card" style="text-align:center; padding: 3rem 2rem;">
-    <div class="done-icon">✅</div>
-    <h2>Undi Berjaya Dihantar!</h2>
-    <p>Terima kasih kerana mengundi. Pilihan anda telah direkodkan.</p>
-    <div class="chosen-list">
+  <div class="done-card">
+    <div class="done-icon-ring">✅</div>
+    <h2>Undi Berjaya Dihantar</h2>
+    <p class="done-desc">Terima kasih kerana menyertai proses demokrasi koperasi. Pilihan anda telah direkodkan dengan selamat.</p>
+    <div class="chosen-panel">
       <h4>Calon yang anda pilih</h4>
       <div id="done-list"></div>
     </div>
-    <p style="font-size:13px;">Setiap pengundi hanya dibenarkan mengundi sekali sahaja.</p>
+    <p class="done-note">Setiap pengundi hanya dibenarkan mengundi sekali. Rekod undi adalah muktamad.</p>
   </div>
 </div>
 
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirm-modal">
-  <div class="modal">
+  <div class="modal-box">
     <h3>Sahkan Undi Anda</h3>
-    <p>Anda akan mengundi calon-calon berikut. Tindakan ini <strong>tidak boleh dibatalkan</strong>.</p>
-    <ul id="confirm-list"></ul>
-    <div class="modal-btns">
-      <button class="btn-outline" onclick="closeConfirm()">Kembali</button>
+    <p class="modal-desc">Anda akan mengundi calon-calon berikut. Tindakan ini <strong>tidak boleh dibatalkan</strong> setelah dihantar.</p>
+    <div class="modal-candidates" id="confirm-list"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeConfirm()">← Kembali</button>
       <button class="btn-submit" id="confirm-submit-btn" onclick="submitVote()">Ya, Hantar Undi</button>
     </div>
   </div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ══════════════════════════════════════════════════════════════
-  // 🔧 LANGKAH 1: TAMPAL FIREBASE CONFIG ANDA DI SINI
-  // ══════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════
+  // 🔧 FIREBASE CONFIG
+  // ══════════════════════════════════════════════════════
   const firebaseConfig = {
-  apiKey: "AIzaSyD1SXTOq1S5vcsto5oGQHo7x2S9xPwF-p0",
-  authDomain: "koikma.firebaseapp.com",
-  projectId: "koikma",
-  storageBucket: "koikma.firebasestorage.app",
-  messagingSenderId: "47302882263",
-  appId: "1:47302882263:web:02d5e7ad61354a37f39192"
+    apiKey:            "AIzaSyD1SXTOq1S5vcsto5oGQHo7x2S9xPwF-p0",
+    authDomain:        "koikma.firebaseapp.com",
+    projectId:         "koikma",
+    storageBucket:     "koikma.firebasestorage.app",
+    messagingSenderId: "47302882263",
+    appId:             "1:47302882263:web:02d5e7ad61354a37f39192"
   };
-  // ══════════════════════════════════════════════════════════════
 
-  // ══════════════════════════════════════════════════════════════
-  // 🔧 LANGKAH 2: EDIT NAMA CALON DI SINI
-  // ══════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════
+  // 🔧 SENARAI CALON
+  // ══════════════════════════════════════════════════════
   window.CANDIDATES = [
-    { id: "c1", name: "Mohammad Faisal",   position: "Peniaga / Usahawan",       initials: "AF" },
-    { id: "c2", name: "Siti Zulaikha", position: "Guru / Pendidik",           initials: "SA" },
-    { id: "c3", name: "Nor Syahidah",      position: "Jurutera / Profesional",    initials: "MR" },
-    { id: "c4", name: "Faruqal Farisi",         position: "Akauntan / Kewangan",       initials: "NY" },
-    { id: "c5", name: "Muhammad Ikmal",          position: "Pegawai Kerajaan / Pesara", initials: "ZN" },
-    { id: "c6", name: "Cikyed",            position: "Usahawan / Pengurusan",     initials: "RS" },
+    { id: "c1", name: "Mohammad Faisal",  position: "Penggosok Gigi Harimau di Zoo",        initials: "MF" },
+    { id: "c2", name: "Siti Zulaikha",    position: "Pencuci Bangunan 300 TIngkat",            initials: "SZ" },
+    { id: "c3", name: "Nor Syahidah",     position: "Penggusti Professional WWE",     initials: "NS" },
+    { id: "c4", name: "Faruqal Farisi",   position: "Penggoda Gadis Professional",        initials: "FF" },
+    { id: "c5", name: "Muhammad Ikmal",   position: "Pelakon Tambahan Hantu Raya",  initials: "MI" },
+    { id: "c6", name: "Cikyed",           position: "Hacker Dan Scammer Professional",      initials: "CY" },
   ];
-  // ══════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════
 
   const MAX_PICKS = 4;
-  let db, currentIC;
+  let db, currentAnggota;
   let selected = new Set();
 
   // Init Firebase
@@ -289,78 +701,134 @@
     db = getFirestore(app);
     show("screen-login");
     hide("screen-loading");
-  } catch (e) {
-    document.querySelector("#screen-loading p").textContent = "Ralat: Gagal menyambung. Semak Firebase config.";
+  } catch(e) {
+    document.querySelector("#screen-loading p").textContent = "Ralat: Gagal menyambung ke sistem.";
     console.error(e);
   }
 
   function show(id) { document.getElementById(id).style.display = "block"; }
   function hide(id) { document.getElementById(id).style.display = "none"; }
 
-  // ── LOGIN ──────────────────────────────────────────────────────
+  // ── OTP BOXES ─────────────────────────────────────────
+  const BOX_COUNT = 5;
+  const boxContainer = document.getElementById("anggota-boxes");
+
+  for (let i = 0; i < BOX_COUNT; i++) {
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.inputMode = "numeric"; inp.maxLength = 1;
+    inp.className = "anggota-box"; inp.dataset.index = i;
+    inp.setAttribute("autocomplete", "off");
+
+    inp.addEventListener("input", e => {
+      const val = e.target.value.replace(/\D/g, "");
+      e.target.value = val ? val[val.length - 1] : "";
+      if (val) {
+        e.target.classList.add("filled");
+        const next = boxContainer.querySelector(`[data-index="${i+1}"]`);
+        if (next) next.focus();
+      } else {
+        e.target.classList.remove("filled");
+      }
+    });
+
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Backspace" && !e.target.value) {
+        const prev = boxContainer.querySelector(`[data-index="${i-1}"]`);
+        if (prev) { prev.focus(); prev.value = ""; prev.classList.remove("filled"); }
+      }
+      if (e.key === "Enter") window.doLogin();
+    });
+
+    inp.addEventListener("paste", e => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, BOX_COUNT);
+      const boxes = boxContainer.querySelectorAll(".anggota-box");
+      [...paste].forEach((ch, idx) => {
+        if (boxes[idx]) { boxes[idx].value = ch; boxes[idx].classList.add("filled"); }
+      });
+      const nextEmpty = [...boxes].find(b => !b.value);
+      if (nextEmpty) nextEmpty.focus();
+    });
+
+    boxContainer.appendChild(inp);
+  }
+
+  function getAnggotaValue() {
+    return [...boxContainer.querySelectorAll(".anggota-box")].map(b => b.value).join("");
+  }
+
+  // ── LOGIN ──────────────────────────────────────────────
   window.doLogin = async function() {
-    const ic  = document.getElementById("ic-input").value.trim().replace(/[-\s]/g, "");
+    const anggota = getAnggotaValue();
     const err = document.getElementById("login-error");
-    const inf = document.getElementById("login-info");
     const btn = document.getElementById("login-btn");
     err.style.display = "none";
-    inf.style.display = "none";
 
-    if (!/^\d{12}$/.test(ic)) {
-      err.textContent = "Nombor IC tidak sah. Sila masukkan 12 digit tanpa sempang.";
+    if (anggota.length !== 5) {
+      err.textContent = "Nombor Anggota mesti tepat 5 digit. Sila lengkapkan kesemua kotak.";
       err.style.display = "block"; return;
     }
 
     btn.disabled = true;
-    btn.textContent = "Menyemak...";
+    btn.innerHTML = '<div class="loader-ring" style="width:18px;height:18px;margin:0;border-width:2px"></div> Menyemak...';
 
     try {
-      const voterRef = doc(db, "voters", ic);
+      const voterRef = doc(db, "voters", anggota);
       const snap = await getDoc(voterRef);
       if (snap.exists() && snap.data().voted) {
-        err.textContent = "Anda telah mengundi sebelum ini. Setiap pengundi hanya dibenarkan mengundi sekali.";
+        err.textContent = "Nombor Anggota ini telah digunakan untuk mengundi. Setiap anggota hanya dibenarkan mengundi sekali.";
         err.style.display = "block";
-        btn.disabled = false; btn.textContent = "Teruskan ke Pengundian →";
+        btn.disabled = false;
+        btn.innerHTML = 'Teruskan ke Pengundian <span class="btn-arrow">→</span>';
         return;
       }
-      currentIC = ic;
-      document.getElementById("voter-display").textContent =
-        "Pengundi: " + ic.replace(/(\d{6})(\d{2})(\d{4})/, "$1-$2-$3");
+      currentAnggota = anggota;
+      document.getElementById("voter-display").textContent = "Anggota No. " + anggota;
       hide("screen-login");
       renderCandidates();
       show("screen-voting");
     } catch(e) {
-      err.textContent = "Ralat sambungan. Cuba semula.";
+      err.textContent = "Ralat sambungan. Sila cuba semula.";
       err.style.display = "block";
-      btn.disabled = false; btn.textContent = "Teruskan ke Pengundian →";
+      btn.disabled = false;
+      btn.innerHTML = 'Teruskan ke Pengundian <span class="btn-arrow">→</span>';
       console.error(e);
     }
   };
 
-  document.getElementById("ic-input").addEventListener("keydown", e => {
-    if (e.key === "Enter") window.doLogin();
-  });
+  // ── BUILD PICK DOTS ────────────────────────────────────
+  function buildDots() {
+    const c = document.getElementById("pick-dots");
+    c.innerHTML = "";
+    for (let i = 0; i < MAX_PICKS; i++) {
+      const d = document.createElement("div");
+      d.className = "pick-dot"; d.id = "pdot-" + i;
+      c.appendChild(d);
+    }
+  }
 
-  // ── RENDER CANDIDATES ──────────────────────────────────────────
+  // ── RENDER CANDIDATES ──────────────────────────────────
   function renderCandidates() {
+    buildDots();
     document.getElementById("candidates-grid").innerHTML = window.CANDIDATES.map((c, i) => `
-      <div class="candidate-card" id="card-${c.id}" onclick="toggleCandidate('${c.id}')">
-        <div class="avatar">${c.initials}</div>
-        <div class="cinfo">
-          <h3>${c.name}</h3>
-          <p>${c.position}</p>
+      <div class="cand-card" id="card-${c.id}" onclick="toggleCandidate('${c.id}')">
+        <div class="cand-avatar">${c.initials}</div>
+        <div class="cand-info">
+          <div class="cand-name">${c.name}</div>
+          <div class="cand-pos">${c.position}</div>
         </div>
-        <span class="cno">Calon ${i+1}</span>
-        <div class="chk">✓</div>
+        <span class="cand-number">Calon ${i+1}</span>
+        <div class="cand-check">✓</div>
       </div>
     `).join("");
   }
 
   window.toggleCandidate = function(id) {
     const card = document.getElementById("card-" + id);
-    if (card.classList.contains("disabled") && !selected.has(id)) return;
-    if (selected.has(id)) { selected.delete(id); card.classList.remove("selected"); }
-    else {
+    if (card.classList.contains("disabled")) return;
+    if (selected.has(id)) {
+      selected.delete(id); card.classList.remove("selected");
+    } else {
       if (selected.size >= MAX_PICKS) return;
       selected.add(id); card.classList.add("selected");
     }
@@ -371,6 +839,16 @@
     const count = selected.size;
     document.getElementById("count-display").textContent = count;
     document.getElementById("submit-btn").disabled = count !== MAX_PICKS;
+    document.getElementById("progress-fill").style.width = (count / MAX_PICKS * 100) + "%";
+    document.getElementById("progress-text").textContent = count + " / " + MAX_PICKS;
+
+    // Dots
+    for (let i = 0; i < MAX_PICKS; i++) {
+      const d = document.getElementById("pdot-" + i);
+      if (d) d.classList.toggle("lit", i < count);
+    }
+
+    // Disable unselected when full
     window.CANDIDATES.forEach(c => {
       const card = document.getElementById("card-" + c.id);
       if (!selected.has(c.id) && count >= MAX_PICKS) card.classList.add("disabled");
@@ -378,58 +856,64 @@
     });
   }
 
-  // ── CONFIRM ────────────────────────────────────────────────────
+  // ── CONFIRM ────────────────────────────────────────────
   window.openConfirm = function() {
-    const names = [...selected].map(id => window.CANDIDATES.find(c => c.id === id).name);
-    document.getElementById("confirm-list").innerHTML = names.map(n => `<li>${n}</li>`).join("");
+    const items = [...selected].map((id, i) => {
+      const c = window.CANDIDATES.find(x => x.id === id);
+      return `<div class="modal-cand-item"><span class="modal-cand-icon">👤</span>${c.name}<span style="margin-left:auto;font-size:11px;color:var(--muted)">${c.position}</span></div>`;
+    }).join("");
+    document.getElementById("confirm-list").innerHTML = items;
     document.getElementById("confirm-modal").classList.add("active");
   };
   window.closeConfirm = function() {
     document.getElementById("confirm-modal").classList.remove("active");
   };
 
-  // ── SUBMIT ─────────────────────────────────────────────────────
+  // ── SUBMIT ─────────────────────────────────────────────
   window.submitVote = async function() {
     const btn = document.getElementById("confirm-submit-btn");
-    btn.disabled = true; btn.textContent = "Menghantar...";
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loader-ring" style="width:16px;height:16px;margin:0;border-width:2px;border-top-color:var(--obsidian)"></div> Menghantar...';
 
     try {
-      // Mark voter as voted (atomic check via transaction approach)
-      const voterRef = doc(db, "voters", currentIC);
+      const voterRef = doc(db, "voters", currentAnggota);
       const snap = await getDoc(voterRef);
       if (snap.exists() && snap.data().voted) {
-        alert("Anda telah mengundi sebelum ini.");
-        window.closeConfirm(); location.reload(); return;
+        alert("Nombor Anggota ini telah mengundi.");
+        closeConfirm(); location.reload(); return;
       }
 
-      // Write voter record
-      await setDoc(voterRef, { voted: true, votedAt: serverTimestamp(), ic: currentIC });
+      await setDoc(voterRef, { voted: true, votedAt: serverTimestamp(), anggota: currentAnggota });
 
-      // Increment vote counts
       const voteRef = doc(db, "votes", "tally");
       const updateData = {};
       selected.forEach(id => { updateData[id] = increment(1); });
       const tallySnap = await getDoc(voteRef);
-      if (tallySnap.exists()) { await updateDoc(voteRef, updateData); }
-      else { 
-        const init = {}; 
+      if (tallySnap.exists()) {
+        await updateDoc(voteRef, updateData);
+      } else {
+        const init = {};
         window.CANDIDATES.forEach(c => { init[c.id] = 0; });
         selected.forEach(id => { init[id] = 1; });
         await setDoc(voteRef, init);
       }
 
-      // Show done screen
       const chosen = [...selected].map(id => window.CANDIDATES.find(c => c.id === id));
-      document.getElementById("done-list").innerHTML = chosen.map(c =>
-        `<div class="chosen-item"><div class="dot"></div><span>${c.name}</span></div>`
+      document.getElementById("done-list").innerHTML = chosen.map((c, i) =>
+        `<div class="chosen-item">
+          <div class="chosen-item-dot"></div>
+          <span>${c.name}</span>
+          <span class="chosen-item-num">Calon ${window.CANDIDATES.findIndex(x=>x.id===c.id)+1}</span>
+        </div>`
       ).join("");
-      window.closeConfirm();
+
+      closeConfirm();
       hide("screen-voting");
       show("screen-done");
-
     } catch(e) {
-      alert("Ralat semasa menghantar undi. Cuba semula.");
-      btn.disabled = false; btn.textContent = "Ya, Hantar Undi";
+      alert("Ralat semasa menghantar undi. Sila cuba semula.");
+      btn.disabled = false;
+      btn.textContent = "Ya, Hantar Undi";
       console.error(e);
     }
   };
