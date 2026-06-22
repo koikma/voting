@@ -571,7 +571,7 @@
     </div>
     <div class="badge-pill"><div class="badge-dot"></div>Sistem Pengundian Elektronik</div>
     <h1>Pemilihan <em>Ahli Lembaga</em> Koperasi</h1>
-    <p class="subtitle">Pilih 4 daripada 6 calon yang tersenarai · Setiap undi adalah rahsia</p>
+    <p class="subtitle">Pilih 4 daripada 6 calon yang tersenarai · Masuk menggunakan 6 digit pertama IC</p>
   </div>
 </header>
 
@@ -586,11 +586,11 @@
   <div class="glass-card">
     <div class="card-icon">🗳️</div>
     <h2>Pengesahan Pengundi</h2>
-    <p class="desc">Masukkan 5 digit Nombor Anggota anda untuk mengakses sistem pengundian selamat.</p>
+    <p class="desc">Masukkan <strong style="color:var(--gold-light)">6 digit pertama</strong> nombor Kad Pengenalan anda (contoh: IC <strong style="color:var(--gold-light)">901231</strong>-07-5678 → taip <strong style="color:var(--gold-light)">901231</strong>) untuk mengesahkan identiti anda.</p>
 
-    <label class="field-label">Nombor Anggota (5 Digit)</label>
+    <label class="field-label">6 Digit Pertama Kad Pengenalan</label>
     <div class="anggota-input-row" id="anggota-boxes"></div>
-    <p class="hint-text">Taip digit satu per satu atau tampal nombor anda</p>
+    <p class="hint-text">Contoh: IC 901231-07-5678 → masukkan 901231</p>
 
     <div class="msg-error" id="login-error"></div>
     <div class="msg-info"  id="login-info"></div>
@@ -602,6 +602,56 @@
 
     <div class="divider"><div class="divider-line"></div><div class="divider-text">atau</div><div class="divider-line"></div></div>
     <div class="admin-link"><a href="admin.html">⚙ Halaman Pentadbir</a></div>
+  </div>
+</div>
+
+<!-- CONFIRM IDENTITY -->
+<div class="container" id="screen-confirm-id" style="display:none; max-width:480px; margin:0 auto;">
+  <div class="glass-card">
+    <div class="card-icon">🪪</div>
+    <h2>Sahkan Identiti Anda</h2>
+    <p class="desc">Adakah ini nama anda? Sila sahkan sebelum meneruskan pengundian.</p>
+
+    <div style="background:rgba(201,148,10,0.08); border:1.5px solid rgba(201,148,10,0.35);
+                border-radius:14px; padding:1.5rem; text-align:center; margin-bottom:1.75rem;">
+      <div style="font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+                  color:var(--gold-light); margin-bottom:8px;">Nama Anggota</div>
+      <div id="confirm-name-display"
+           style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:700;
+                  color:var(--white); line-height:1.3;"></div>
+    </div>
+
+    <input type="hidden" id="ic6-store" />
+    <input type="hidden" id="name-store" />
+
+    <div class="msg-error" id="confirm-id-error"></div>
+
+    <button class="btn-primary" id="confirm-id-btn" onclick="confirmIdentity()">
+      Ya, Ini Saya — Teruskan
+      <span class="btn-arrow">→</span>
+    </button>
+
+    <button onclick="denyIdentity()"
+      style="display:block; width:100%; margin-top:12px; padding:12px;
+             background:transparent; border:1.5px solid rgba(201,148,10,0.2);
+             border-radius:12px; font-family:Outfit,sans-serif; font-size:14px;
+             color:var(--muted); cursor:pointer; transition:all 0.2s;"
+      onmouseover="this.style.borderColor='rgba(201,148,10,0.5)';this.style.color='var(--off-white)'"
+      onmouseout="this.style.borderColor='rgba(201,148,10,0.2)';this.style.color='var(--muted)'">
+      ← Bukan Saya, Cuba Semula
+    </button>
+  </div>
+</div>
+
+<!-- NAME PICKER MODAL (for duplicate IC6) -->
+<div class="modal-overlay" id="name-pick-overlay">
+  <div class="modal-box">
+    <h3>Pilih Nama Anda</h3>
+    <p class="modal-desc">Terdapat lebih daripada seorang anggota dengan 6 digit IC yang sama. Sila pilih nama anda.</p>
+    <div id="name-pick-list"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeNamePicker()">← Kembali</button>
+    </div>
   </div>
 </div>
 
@@ -682,17 +732,19 @@
   // 🔧 SENARAI CALON
   // ══════════════════════════════════════════════════════
   window.CANDIDATES = [
-    { id: "c1", name: "Mohammad Faisal",  position: "Penggosok Gigi Harimau Kontot",        initials: "MF" },
-    { id: "c2", name: "Siti Zulaikha",    position: "Penggusti Professional",            initials: "SZ" },
-    { id: "c3", name: "Nor Syahidah",     position: "Tok Bomoh Siam Santet",     initials: "NS" },
-    { id: "c4", name: "Faruqal Farisi",   position: "Penggoda Kasonova Gadis Malaya",        initials: "FF" },
-    { id: "c5", name: "Muhammad Ikmal",   position: "Tukang Urut Batin Tanpa Lesen",  initials: "MI" },
-    { id: "c6", name: "Cikyed",           position: "Scammer Berjaya",      initials: "CY" },
+    { id: "c1", name: "Mohammad Faisal",  position: "Peniaga / Usahawan",        initials: "MF" },
+    { id: "c2", name: "Siti Zulaikha",    position: "Guru / Pendidik",            initials: "SZ" },
+    { id: "c3", name: "Nor Syahidah",     position: "Jurutera / Profesional",     initials: "NS" },
+    { id: "c4", name: "Faruqal Farisi",   position: "Akauntan / Kewangan",        initials: "FF" },
+    { id: "c5", name: "Muhammad Ikmal",   position: "Pegawai Kerajaan / Pesara",  initials: "MI" },
+    { id: "c6", name: "Cikyed",           position: "Usahawan / Pengurusan",      initials: "CY" },
   ];
   // ══════════════════════════════════════════════════════
 
+  const MEMBER_LOOKUP = {"871019":["ADILAH BT AHMAD GHAZALI"],"443876":["HJH HASMAH BT ABD HAMID."],"580603":["ZAINUL ABIDIN B. A. KADIR"],"581016":["HALIMAH RABIAH BT HJ ASMUNI"],"561111":["ABU BAKAR BIN SEDIK"],"570926":["RAJA RAHIMAH BT RAHMAT"],"630517":["RABIAH BT ZAKARIA"],"590802":["ARIFIN BIN PUTEH"],"640201":["ZAITON BT. MUSTAPA"],"330822":["DOLLAH BIN MAT"],"620820":["HARIS BIN ABDOL"],"501103":["INDAR KAUR D/O DAN SINGH"],"611205":["RUZILAH BT ABD MALEK"],"537173":["SUSHILA DEVI A/P S. RAJARATNAM"],"960302":["AINUR AMIRA BT MUSTAFA"],"630712":["ROSSLY B. MALIK"],"570820":["RAZALI B. YUSOFF"],"660504":["KAMARIAH BT AWANG"],"601025":["MOHD IDRIS ABD MALEK"],"651023":["NORSIAH BT YAMAN"],"558775":["HASNAH BT MOHD NOR"],"494733":["MOHAMMAD HUSSAIN HABIL"],"600301":["ABD RAHMAN BIN HASSAN NORDIN"],"600214":["HAZIMAH BT RAMLI"],"530415":["MOHAMAD HASHIM B ABU"],"520213":["ASMAH BT SAMSUDIN"],"650103":["RAMLI B. MOHD NOR"],"610422":["ZAKARIA BIN HASSAN"],"540612":["HAYATI MD SALLEH"],"560107":["MORNI BINTI MD SALLEH","NORWATIM HJ ABD LATIFF"],"610826":["BAHARUDDIN BIN TALIB"],"610717":["ROKIAH BT OMAR"],"631017":["FADZILAH BT AHMAD","RAHIMAH BT ABD SAMAD"],"540816":["ZAKARIA BIN MAT YUSOF"],"640210":["KHADIJAH BT ABDULLAH"],"590319":["HASSAN BIN HJ AHMAD"],"550319":["HARIS BIN MOHD ALWI"],"621007":["ABDUL HALIM BIN JAPAR"],"650611":["ANUAR BIN SHAMSUDDIN"],"451201":["MOHD KHAIRI BIN MOHD DAUD"],"106474":["RAHMAH BT TALIB"],"580512":["ALLIAS BIN ISHAK"],"580801":["AISHAH BT ARIFFIN"],"540406":["IDRIS BIN ISMAIL"],"580408":["MOHD SAFAAI BIN SAID"],"531130":["RAJA MAIMON BT RAJA YUSOF"],"580510":["MARIAM BT M.W MERICAN"],"480121":["ARMI BIN HJ ZAINUDIN"],"610704":["NURIZAH BT NOORDIN"],"630125":["HASNAH LAILI MUTASAR"],"784898":["NARAIN SINGH"],"550903":["SALBIAH BINTI HUSSAIN"],"446085":["MOHD HILMEY B MOHD TAIB"],"521128":["PERIASAMY A/L PERUMAL"],"580329":["PRAMILA DEVI A/P AUDIYAR"],"570131":["JAMILAH BT DIN"],"590612":["ZAIMI ROSMIDA BTE MD JAMIN"],"012345":["SABARIAH BT MD ZAKI"],"510105":["HARON BIN KHAMIS"],"618532":["SURIANI B. JASMAN"],"570184":["JASMANI BT MOHD YUNUS"],"651113":["HAYATI BT NGABENI"],"560817":["MOHD SOFIAN BIN HJ ABD JALIL"],"680910":["NAJMAH BINTI NAWAWI"],"300136":["MAZNI BT M.A ISMAIL"],"685570":["ISNIN BIN ABU"],"523171":["SITI ROHANI BT UDIN"],"671208":["IBRAHIM BIN YAAKUB"],"650801":["ASIAH BT ABDUL RAHMAN"],"560831":["SULAIHAH BT ABD RASHID"],"680703":["MOHD KHIR BIN SALLEH"],"620806":["RAMLAN BIN KAMSIN"],"561228":["KAMARIAH BT ABD RAHMAN"],"696514":["JAMILAH BT HAMIDAN"],"640608":["NOR MASURI BT MOHD SARIP"],"620610":["NOR KHAIRIAH BT MOHD TAP@HARUN"],"650917":["MERIAM BINTI HARUN"],"690311":["SA'ADIAH BT AHMAD"],"730401":["ROSMAZNI BT ABD MANAN"],"680606":["NOR HAMIDAH BT ABDUL SAMAT"],"270299":["JULIAH BT JUMIN"],"813241":["VIJENDRAN A/L MUTHUTAMBHY"],"640529":["SITI FATIMAH BINTI SAJADI"],"630601":["RAZIF BIN ABDUL HALIM"],"630811":["NORA BT ROKIMAN"],"710601":["ZALEHA BT YUSOF"],"750725":["NOR AYUBI ISMAIL"],"680310":["ROSIDAH BT RASHID"],"620821":["MOKHTARUDDIN BIN NORDIN"],"750212":["RUBIAH BT SABRAN"],"740629":["AFIZA BT ABDUL KARIM"],"690109":["PARIZAI BT ALI"],"760730":["NOR AZLAN BIN HASBULLLAH","MOHAMAD RASYDI BIN ABD RASHID"],"680804":["ROZIAH BT MOHAMED"],"760227":["NORAESYAH BT SAARI"],"800712":["ROHAYA BT IBRAHIM"],"780607":["SITI NOREHAN BT SHAHARI"],"780221":["ROHALINDA BT AHAD"],"740106":["ASNIDA BT ADAM"],"750717":["MOHD ZAIB BIN MAT YUNUS"],"670811":["MAIMON BT ABDULLAH"],"760704":["AZLIFAH BT ABAS"],"810116":["MOHAMAD HAIRI BIN ROSNI"],"780128":["SHARINA BT ABDULLAH"],"720806":["NORSHAMILAWATI BT JAMEL"],"760626":["MOHD RAZALIE BIN RAFFAE"],"780814":["ZULKIFLEE BIN ASPAN"],"770607":["NOR ASLAMIAH ALI"],"620501":["ZAMANHURI BIN YAHAYA"],"760727":["NOOR ZEETA BT MOHD RAMLI"],"601230":["MAZNAN MD SANI"],"780720":["NOR AZLINA BT KASSIM"],"830106":["NORLIZAWATI BT MOHAMAD ZAMZAMIL"],"751025":["ABDUL HALIM BIN ABDULLAH"],"720713":["SHAHRUL AFENDI AB JABAR"],"701016":["MD NASREIN BIN ISLAH"],"610920":["AZMAN BIN GHAZALI"],"820221":["SAKINAH BT IDRIS"],"801006":["SHAIFUL AZRI ZAKARIAH"],"791013":["NORAZIZAH BT OMAR"],"831119":["MUHAMMAD KHIDZIR BIN AHMAD NAZRI"],"790220":["ZARINA BT AB. AZAIS"],"830128":["MOHD JOHARI B KHAIRIL ANUAR"],"820226":["MOHD HASRULNIZAN KUSAINI"],"790929":["YUSMAN BIN YAKOB"],"780426":["HAIRULNIZAM MOHD ROSLI"],"731229":["AZLAN BIN LAILI"],"831021":["MOHD KHAIRIL BIN ABD HADI"],"770117":["DATU ZAHIRUDDIN DATU TAMBUYONG"],"780707":["MAZLAN BIN ALI"],"741028":["AHMAD FAIZAL BIN AHMAD SHAARANI"],"810624":["FAIZ BIN AHMAD YATIM"],"860401":["JOHARI BIN JALADIN"],"780419":["HASRIN ABU HASSAN"],"750326":["MOHD FAISAL BIN SHARIFF"],"790914":["MOHD SHAHRON ANUAR BIN SAID"],"690519":["YUSRI BIN TARIP"],"750110":["HAMIZAH BT MOHD NADZIR"],"760622":["SITI MAIMUNAH JERNI"],"720608":["MOHD SHAMSUDDIN BIN MOHD NOR"],"771231":["MUSTAKIM BIN OMAR"],"790921":["YUSLINAH BT PUNGUT"],"800413":["SHARIFAH NORASHIKIN BINTI SYED MOHD IDRIS"],"781216":["NORAMEZAH AMRAN"],"810103":["NUR FAEZA BT YAHYA"],"720722":["NASIBAH BT AHMAD"],"750709":["NORHAYATI BT ABDUL RAHMAN"],"700101":["MOHD RASID ABDUL HAIR"],"751229":["ARFIZAWATI BT ABD HADI"],"770715":["NOR AZILA BT MD TAUHID"],"791022":["NORBIHA KOSMURI@KASMURI"],"750603":["MAZLAN MOHAMAD JASIN"],"771118":["NORHAZLIN BT ABDULLAH @ ABF RAZAK"],"741212":["HAMIDAH BT MOHD JOS"],"870521":["NURUL NAJWA BINTI MUSTAFA"],"750130":["ASHA'ARI BIN ARSYAD"],"870419":["NOOR FARIZA BT ZAFRI"],"690526":["ASIAH BT KASSIM"],"730514":["HASYIM BIN YUSOF"],"710923":["RAHMATHBEE ZARINATUN BINTI MOHD ABDUL KADER"],"800416":["ASROLNIZAM BIN MOHAMED SULONG"],"830728":["NORULHUDA BT BAHARUDIN"],"750727":["HASLINDA BT SUJAK"],"780925":["RAFEDAH BT JUHAN"],"781021":["SALWANA BT ALI"],"761228":["MOHD NUSI B. ABD RAHMAN"],"820610":["NORLIZAWATI BT DAUD"],"890917":["IZNI HUSNA BT IDRIS"],"711012":["HUSAINI BIN NASERAN"],"860806":["HASROL NAZRY BIN HASHIM"],"820411":["MOHD FAIRUZ BIN TULUS"],"890425":["DINAH NABILAH BT MOKHTARUDDIN"],"691214":["JAIBIT BIN JAUDIN"],"750517":["MOHAMMAD PISAH ALI"],"730904":["SHAMSUL KHAIRI ABU HASSAN"],"510405":["KAMALUDIN BIN OTHMAN"],"770906":["KHADIJAH AHMAD"],"740222":["MOHD HASWARDI B MORSHIDI"],"720101":["ZURITA BT MOHD SALLEH"],"810501":["JU SAMSUDDIN BIN SAFIAN"],"800801":["YUSNITA OTHMAN"],"830416":["SYAZWANI SHAMSUDDIN"],"790816":["AYU DIANA BT AWANG"],"890909":["MUHAMMAD FAIZ BIN ZAKARIA"],"900609":["MOHD AMMAR MOKHTARUDIN"],"770823":["JULIANA MD YUSOP"],"870408":["NORHIDAYAH BAHARUDDIN"],"890804":["NOR MAHERAN BAHARUDDIN"],"900131":["NUR AIFFA BT ABD RAZAK"],"880112":["MUHAMMAD ARIFF ABD RAZAK"],"570826":["ARIFFIN BIN MAMAT"],"890828":["NURUL IZZAH BINTI MOHD IDRIS"],"841119":["MOHAMAD RAFI BIN HUSSIN"],"900205":["AZIZUL BIN AZIZ"],"910526":["MUHAMMAD NAFIS BIN MAZNAN"],"811216":["NOORLINDA BT RAHIMI"],"800715":["NORSYEIRAWANI BT SHARI"],"850914":["NORLE BIN ABDUL RAHMAN"],"710108":["NOR AZMAWATI BT MOHD SHAFII"],"910803":["KHAIRUL ATMAM BIN MUSTAPA"],"881113":["NUR ATI'QAH BT HAMZAH"],"830625":["FAIZUL AMILIN BIN HAMZAH"],"780417":["MOHD IRWAN B ABDUL MALIK"],"841001":["NORHAYATI BINTI MOHD HANAPI"],"850912":["NORLAILA BT MOHD HANAPI"],"790222":["HANANI BT ABDUL RASID"],"860906":["NOR ARMA BT ABU TALIB"],"800602":["AZRUL AZLAN BIN YAHYA"],"850304":["NURUL IZZA BINTI ZAMURI"],"810929":["NORAFIDAH BT ISMAIL @ YAACOB"],"861031":["NOR ALYANI BT ABD RAZAK"],"850619":["TZ MOHD FITREE BIN ZAKARIA"],"880715":["RINA FAIRUZ BT JAHYA"],"880703":["HAJAR AZWIN BT HJ MOHAMMAD ASHI"],"840810":["MOHAMMED HAYQAL BIN MAHMAD NOR"],"870619":["JULIZAH BT SABSTU"],"821207":["FRANK ME-OL BIN ABDULLAH"],"841005":["MUHAMMAD ZULFADLI BIN BACHOK"],"620106":["PROF.MADYA DR.ABDUL RAHMAN B.ABDUL RAZAK SHAIK"],"770508":["SUFIAN BIN SAARI@SHARI"],"661027":["WAN IDRIS B. ADNAN"],"890930":["WAN ZULHAFIZ LOKMAN BIN WAN IDRIS"],"920719":["WAN NORFATHIN AMIRA BT WAN IDRIS"],"960816":["NUR FARIZA BT ZAKARIA"],"890604":["NOR ZAIDAH BT MUHAMMAD"],"910908":["MUHAMMAD AZAM BIN NORAZMAN"],"790619":["MOHD ZULKIFLI BIN SEDIK"],"790314":["MOHD NADZIR BIN RASLI"],"870415":["NUR IZZATI BT HASHIM"],"810514":["NORHANA BT ABDUL TALIB"],"871011":["NURUL ELIANA BT MOHD FADHIL"],"581122":["SABRI BIN ALANG MOHAMAD"],"851010":["MUHAMMAD ASWAD BIN YAACOF"],"870904":["INTAN NUR AZREEN MOHAMAD RADZI"],"870127":["SHAIFUL AZLY BIN KAMSANI"],"900503":["NUR ZULAIKHA BT BORHAN"],"891210":["SITI HALIJAH BT ARIS"],"930707":["MUHAMMAD FARHAN BIN ZAKARIA"],"920816":["NUR NAJIHAH BT MAZNAN (NAJMAH)"],"941204":["MUHAMMAD NAZIRUL NA'IM BIN MAZNAN"],"871117":["NAZIRAH BT BAHARUDIN"],"880122":["NOR FADHILAH BT MOHD"],"881223":["NORAINI BINTI ASIN"],"870824":["NORFAZILAH BT ABDUL GHANI"],"760111":["NURUL AIN BT ABDULLAH"],"811023":["NURUL AINI BT MUHAMMAD"],"820203":["NURUL SYIEFA BINTI MOHD RAMLI"],"860220":["MOHD HAMZAH KASIM"],"841020":["SITI HAJAR BT SAAEY"],"880925":["MUHAMMAD AFNAN BIN HASIM"],"920830":["NORHASLIANA BT SAKHALID"],"880720":["NOOR ASHIKIN BINTI JAMALUDIN"],"971122":["NUR ATHIRAH BT MAZNAN"],"810102":["HAFIZAL BIN ABU BAKAR"],"920417":["AHMAD FITREE BIN ZAFRI"],"830901":["AHMAD FAKHIRIN BIN ZAFRI"],"840926":["AHMAD FARIZ BIN ZAFRI"],"861101":["SITI FATIHAH NUR BINTI ISMAIL"],"851007":["MOHD AZMAN BIN MOHD RUSLI"],"831106":["MUHAMMAD HAIKAL BIN RAZALI"],"920116":["AHMAD ASYRAF BIN NIK AB KADIR"],"791025":["NORHAZILINA BT. ABDUL HALIM"],"941117":["MUHAMAD NUR FAHMI BIN MOHD HASSAN"],"870316":["SHAREPAH NUR AZIRAH BT. SHAREH ABD RAHMAN"],"910630":["MUHAMAD SHAFIQ BIN MOHD NOOR"],"860226":["WAN NUR 'AIN BT. WAN ABD. RAHIM"],"900320":["NUR SYAMIMI BT. OTHMAN"],"840629":["NOOR SHAFEEZA BT ZAINUDDIN"],"891002":["NASUHA BINTI NEZUAKIFLI"],"870222":["INTIRAN A/L HARIKRISHNAN"],"880204":["MOHD AZANI BIN MAT LEH"],"831221":["ADILA BT HASHIM"],"640526":["KAMARUDDIN BIN KASSIM"],"900327":["NOOR AZRIN BINTI KASIM"],"871004":["NUR SHUHADA BT MOHD ALI"],"800911":["NORANITA BT MOHD NOR"],"850919":["MARYAM HAMIDAH BT MOHD GHAZI"],"850311":["AFIZAH BT ABDUL JALAL"],"880807":["NOR AZILA WAHIDA BT AWI"],"890728":["SITI NURAINI BINTI ABU BAKAR"],"890929":["NUR HAFIEZA BT HASHIM"],"791122":["FARAHAINI BT MOHD HANIF"],"880624":["MALESA SHELA BT TA'YIB"],"890408":["NORFAEZAH BT MAHMOOD"],"891026":["SITI HAFIZAH BINTI RAMLI"],"810625":["ZUREE ZURAINEE BINTI ABD RAHIM"],"970830":["MUHAMMAD AKMAL ZULHELMI BIN ISMAIL"],"790114":["FAREZ BIN MAHMOOD"],"860612":["CHE SOFIANIZAM BIN CHE SOH"],"950627":["MUHAMMAD IMRAN BIN ABDUL AZIZ"],"870201":["NUUR FADZILLAH BT ZULLKEPLI"],"970403":["NUR AIN AZMIRA BINTI ABU SEMAN"],"770504":["MOHAMMED SALLEH BIN MOHD FADZIL"],"910306":["NOR SUHAILI BINTI YUSUF"],"870426":["NUR ANIZAH BINTI AZIZ"],"000914":["FARUQAL FARISI BIN JUHARI"],"960603":["NURSUHAIDA BINTI SAHROL"],"900624":["NOR SYAHIDAH BINTI AHAMAD"],"990406":["MUHAMMAD NUR IKMAL BIN ABDUL KHALIQ"],"910705":["MUHAMMAD ABDUL HALLIM BIN ZABIDI"],"011124":["NURUL FASIHAH IZZATI BINTI NOR AZARUDDIN"],"000513":["SITI ZULAIKHA BINTI ADNAN"],"730508":["SAIFULNIZAM BIN ABU BAKAR"],"890807":["ABDUH DJABBAR JUSNI@TIJAS"],"960427":["MOHAMMAD ASYRAF BIN UBAIDILLAH"],"940712":["NUR AMALINA BINTI SIDEK"]};
+
   const MAX_PICKS = 4;
-  let db, currentAnggota;
+  let db, currentAnggota, currentMemberName;
   let selected = new Set();
 
   // Init Firebase
@@ -710,7 +762,7 @@
   function hide(id) { document.getElementById(id).style.display = "none"; }
 
   // ── OTP BOXES ─────────────────────────────────────────
-  const BOX_COUNT = 5;
+  const BOX_COUNT = 6;
   const boxContainer = document.getElementById("anggota-boxes");
 
   for (let i = 0; i < BOX_COUNT; i++) {
@@ -759,41 +811,110 @@
 
   // ── LOGIN ──────────────────────────────────────────────
   window.doLogin = async function() {
-    const anggota = getAnggotaValue();
+    const ic6 = getAnggotaValue();
     const err = document.getElementById("login-error");
     const btn = document.getElementById("login-btn");
     err.style.display = "none";
 
-    if (anggota.length !== 5) {
-      err.textContent = "Nombor Anggota mesti tepat 5 digit. Sila lengkapkan kesemua kotak.";
+    if (ic6.length !== 6) {
+      err.textContent = "Sila masukkan tepat 6 digit pertama Kad Pengenalan anda.";
       err.style.display = "block"; return;
     }
 
+    // Look up member in local list
+    const matches = MEMBER_LOOKUP[ic6];
+    if (!matches || matches.length === 0) {
+      err.textContent = "6 digit IC ini tidak dijumpai dalam senarai anggota. Sila semak dan cuba semula.";
+      err.style.display = "block"; return;
+    }
+
+    // If duplicate IC6 — show name picker
+    if (matches.length > 1) {
+      showNamePicker(ic6, matches);
+      return;
+    }
+
+    // Single match — proceed to confirm
+    proceedWithName(ic6, matches[0]);
+  };
+
+  function showNamePicker(ic6, names) {
+    const overlay = document.getElementById("name-pick-overlay");
+    const list = document.getElementById("name-pick-list");
+    list.innerHTML = names.map((n, i) => `
+      <button onclick="selectPickedName('${ic6}', ${i})"
+        style="display:block; width:100%; padding:14px 18px; margin-bottom:10px;
+               background:rgba(201,148,10,0.07); border:1.5px solid rgba(201,148,10,0.2);
+               border-radius:12px; font-family:Outfit,sans-serif; font-size:15px; font-weight:600;
+               color:var(--off-white); cursor:pointer; text-align:left;
+               transition:all 0.2s;"
+        onmouseover="this.style.background='rgba(201,148,10,0.18)';this.style.borderColor='var(--gold)'"
+        onmouseout="this.style.background='rgba(201,148,10,0.07)';this.style.borderColor='rgba(201,148,10,0.2)'">
+        👤 ${n}
+      </button>`).join("");
+    overlay.classList.add("active");
+    window._pickerIC6 = ic6;
+    window._pickerNames = names;
+  }
+
+  window.selectPickedName = async function(ic6, idx) {
+    document.getElementById("name-pick-overlay").classList.remove("active");
+    proceedWithName(ic6, window._pickerNames[idx]);
+  };
+
+  window.closeNamePicker = function() {
+    document.getElementById("name-pick-overlay").classList.remove("active");
+  };
+
+  async function proceedWithName(ic6, memberName) {
+    // Show confirm identity screen
+    document.getElementById("confirm-name-display").textContent = memberName;
+    document.getElementById("ic6-store").value = ic6;
+    document.getElementById("name-store").value = memberName;
+    document.getElementById("screen-login").style.display = "none";
+    document.getElementById("screen-confirm-id").style.display = "block";
+  }
+
+  window.confirmIdentity = async function() {
+    const ic6 = document.getElementById("ic6-store").value;
+    const memberName = document.getElementById("name-store").value;
+    const err = document.getElementById("confirm-id-error");
+    const btn = document.getElementById("confirm-id-btn");
+    err.style.display = "none";
     btn.disabled = true;
     btn.innerHTML = '<div class="loader-ring" style="width:18px;height:18px;margin:0;border-width:2px"></div> Menyemak...';
 
     try {
-      const voterRef = doc(db, "voters", anggota);
+      const voterRef = doc(db, "voters", ic6 + "_" + memberName.replace(/\s+/g,"_").slice(0,20));
       const snap = await getDoc(voterRef);
       if (snap.exists() && snap.data().voted) {
-        err.textContent = "Nombor Anggota ini telah digunakan untuk mengundi. Setiap anggota hanya dibenarkan mengundi sekali.";
+        err.textContent = "Anda telah mengundi sebelum ini. Setiap anggota hanya dibenarkan mengundi sekali.";
         err.style.display = "block";
         btn.disabled = false;
-        btn.innerHTML = 'Teruskan ke Pengundian <span class="btn-arrow">→</span>';
+        btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
         return;
       }
-      currentAnggota = anggota;
-      document.getElementById("voter-display").textContent = "Anggota No. " + anggota;
-      hide("screen-login");
+      currentAnggota = ic6 + "_" + memberName.replace(/\s+/g,"_").slice(0,20);
+      currentMemberName = memberName;
+      document.getElementById("voter-display").textContent = memberName;
+      document.getElementById("screen-confirm-id").style.display = "none";
       renderCandidates();
       show("screen-voting");
     } catch(e) {
       err.textContent = "Ralat sambungan. Sila cuba semula.";
       err.style.display = "block";
       btn.disabled = false;
-      btn.innerHTML = 'Teruskan ke Pengundian <span class="btn-arrow">→</span>';
+      btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
       console.error(e);
     }
+  };
+
+  window.denyIdentity = function() {
+    document.getElementById("screen-confirm-id").style.display = "none";
+    document.getElementById("screen-login").style.display = "block";
+    // Clear boxes
+    boxContainer.querySelectorAll(".anggota-box").forEach(b => { b.value=""; b.classList.remove("filled"); });
+    boxContainer.querySelector("[data-index='0']").focus();
   };
 
   // ── BUILD PICK DOTS ────────────────────────────────────
@@ -889,6 +1010,7 @@
         voted: true,
         votedAt: serverTimestamp(),
         anggota: currentAnggota,
+        namaPengundi: currentMemberName,
         pilihan: [...selected],          // e.g. ["c1","c3","c4","c6"]
         pilihanNama: pickedNames          // e.g. ["Ahmad","Siti","Nor","Cikyed"]
       });
