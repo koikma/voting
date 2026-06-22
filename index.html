@@ -682,12 +682,12 @@
   // 🔧 SENARAI CALON
   // ══════════════════════════════════════════════════════
   window.CANDIDATES = [
-    { id: "c1", name: "Mohammad Faisal",  position: "Penggosok Gigi Harimau di Zoo",        initials: "MF" },
-    { id: "c2", name: "Siti Zulaikha",    position: "Pencuci Bangunan 300 TIngkat",            initials: "SZ" },
-    { id: "c3", name: "Nor Syahidah",     position: "Penggusti Professional WWE",     initials: "NS" },
-    { id: "c4", name: "Faruqal Farisi",   position: "Penggoda Gadis Professional",        initials: "FF" },
-    { id: "c5", name: "Muhammad Ikmal",   position: "Pelakon Tambahan Hantu Raya",  initials: "MI" },
-    { id: "c6", name: "Cikyed",           position: "Hacker Dan Scammer Professional",      initials: "CY" },
+    { id: "c1", name: "Mohammad Faisal",  position: "Peniaga / Usahawan",        initials: "MF" },
+    { id: "c2", name: "Siti Zulaikha",    position: "Guru / Pendidik",            initials: "SZ" },
+    { id: "c3", name: "Nor Syahidah",     position: "Jurutera / Profesional",     initials: "NS" },
+    { id: "c4", name: "Faruqal Farisi",   position: "Akauntan / Kewangan",        initials: "FF" },
+    { id: "c5", name: "Muhammad Ikmal",   position: "Pegawai Kerajaan / Pesara",  initials: "MI" },
+    { id: "c6", name: "Cikyed",           position: "Usahawan / Pengurusan",      initials: "CY" },
   ];
   // ══════════════════════════════════════════════════════
 
@@ -883,7 +883,15 @@
         closeConfirm(); location.reload(); return;
       }
 
-      await setDoc(voterRef, { voted: true, votedAt: serverTimestamp(), anggota: currentAnggota });
+      // Save voter record including which candidates they picked
+      const pickedNames = [...selected].map(id => window.CANDIDATES.find(c => c.id === id).name);
+      await setDoc(voterRef, {
+        voted: true,
+        votedAt: serverTimestamp(),
+        anggota: currentAnggota,
+        pilihan: [...selected],          // e.g. ["c1","c3","c4","c6"]
+        pilihanNama: pickedNames          // e.g. ["Ahmad","Siti","Nor","Cikyed"]
+      });
 
       const voteRef = doc(db, "votes", "tally");
       const updateData = {};
