@@ -421,7 +421,10 @@
       const data       = d.data();
       const docId      = d.id;
       const memberName = data.namaPengundi || "—";
-      const ic6        = data.anggota || docId.split("_")[0];
+      // anggota field stores the composite key e.g. "871019105288_ADILAH_BT_AHMAD"
+      // extract just the IC part (before first underscore)
+      const rawAnggota = data.anggota || docId;
+      const icDisplay  = rawAnggota.includes("_") ? rawAnggota.split("_")[0] : rawAnggota;
       const names      = data.pilihanNama || data.pilihan || [];
       const ts         = data.votedAt?.toDate ? data.votedAt.toDate().toLocaleString("ms-MY") : "—";
 
@@ -436,7 +439,7 @@
         <td style="padding:10px 12px; color:var(--muted); font-size:12px;">${i + 1}</td>
         <td style="padding:10px 12px; white-space:nowrap;">
           <div style="font-weight:700; font-size:13px; color:var(--navy);">${memberName}</div>
-          <div style="font-size:11px; color:var(--muted); font-family:monospace; margin-top:2px;">IC: ${ic6}</div>
+          <div style="font-size:11px; color:var(--muted); font-family:monospace; margin-top:2px;">IC: ${icDisplay}</div>
         </td>
         <td style="padding:10px 12px;">${pillsHtml}</td>
         <td style="padding:10px 12px; color:var(--muted); font-size:12px; white-space:nowrap;">${ts}</td>
@@ -457,8 +460,10 @@
   window.filterVoters = function() {
     const q = document.getElementById("search-voter").value.trim().toLowerCase();
     const filtered = allVoterDocs.filter(d => {
-      const name = (d.data().namaPengundi || "").toLowerCase();
-      const ic   = (d.data().anggota || d.id).toLowerCase();
+      const data = d.data();
+      const name = (data.namaPengundi || "").toLowerCase();
+      const raw  = data.anggota || d.id;
+      const ic   = (raw.includes("_") ? raw.split("_")[0] : raw).toLowerCase();
       return name.includes(q) || ic.includes(q);
     });
     renderVoterTable(filtered);
@@ -466,7 +471,7 @@
 
   // ── CANCEL SINGLE VOTE ───────────────────────────
   window.cancelVote = async function(anggota) {
-    if (!confirm(`Batalkan undi Anggota No. ${anggota}?\n\nTindakan ini akan memadam rekod pengundi dan tolak undi calon mereka.`)) return;
+    if (!confirm(`Batalkan undi ${memberName}?\n\nTindakan ini akan memadam rekod pengundi dan tolak undi calon mereka.`)) return;
 
     try {
       // Get voter data first to know which candidates to decrement
@@ -474,7 +479,8 @@
       const voterSnap = await getDoc(voterRef);
       if (!voterSnap.exists()) { showToast("Rekod tidak dijumpai.", true); return; }
 
-      const picked = voterSnap.data().pilihan || [];
+      const picked     = voterSnap.data().pilihan || [];
+      const memberName = voterSnap.data().namaPengundi || anggota;
 
       // Decrement tally for each picked candidate
       if (picked.length > 0) {
@@ -505,7 +511,7 @@
       document.getElementById("voted-count").textContent = allVoterDocs.length;
       document.getElementById("stat-voters").textContent = allVoterDocs.length;
 
-      showToast(`✅ Undi Anggota ${anggota} telah dibatalkan.`);
+      showToast(`✅ Undi ${memberName} telah dibatalkan.`);
 
     } catch(e) {
       console.error("Cancel vote error:", e);
