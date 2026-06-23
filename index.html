@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pengundian Anggota Lembaga — KoIKMa</title>
+  <title>Pengundian Ahli Lembaga — KoIKMa</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -186,31 +186,29 @@
       color: var(--gold-light); margin-bottom: 10px;
     }
 
-    /* OTP-style 5-box input */
-    .anggota-input-row {
-      display: flex; gap: 6px; justify-content: center; margin-bottom: 0.5rem; flex-wrap: wrap;
-    }
-    .anggota-box {
-      width: 38px; height: 50px;
+    /* Single IC input */
+    .ic-input {
+      width: 100%;
+      padding: 14px 18px;
       background: rgba(255,255,255,0.04);
       border: 1.5px solid rgba(201,148,10,0.25);
-      border-radius: 8px;
-      text-align: center;
+      border-radius: 12px;
       font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem; font-weight: 700;
+      font-size: 1.3rem; font-weight: 700; letter-spacing: 0.15em;
       color: var(--gold-light);
       caret-color: var(--gold);
       outline: none;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
       -webkit-appearance: none;
+      margin-bottom: 0.5rem;
     }
-    .anggota-box:focus {
+    .ic-input:focus {
       border-color: var(--gold);
       background: rgba(201,148,10,0.07);
       box-shadow: 0 0 0 3px rgba(201,148,10,0.18), 0 4px 20px rgba(201,148,10,0.12);
-      transform: translateY(-2px);
     }
-    .anggota-box.filled { border-color: rgba(201,148,10,0.5); }
+    .ic-input::placeholder { color: rgba(201,148,10,0.25); font-size: 1rem; letter-spacing: 0.05em; font-weight: 400; }
 
     .hint-text { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; margin-bottom: 1.75rem; }
 
@@ -545,7 +543,7 @@
       .candidates-grid { grid-template-columns: 1fr; }
       .glass-card, .done-card { padding: 2rem 1.5rem; }
       .vote-topbar, .submit-bar { flex-direction: column; align-items: flex-start; }
-      .anggota-box { width: 28px; height: 42px; font-size: 0.95rem; }
+      
     }
   </style>
 </head>
@@ -589,7 +587,7 @@
     <p class="desc">Masukkan nombor Kad Pengenalan anda <strong style="color:var(--gold-light)">tanpa sempang</strong>. IC baru: <strong style="color:var(--gold-light)">12 digit</strong>. IC lama: masukkan seperti biasa.</p>
 
     <label class="field-label">Nombor Kad Pengenalan</label>
-    <div class="anggota-input-row" id="anggota-boxes"></div>
+    <input type="text" class="ic-input" id="ic-input-field" placeholder="Contoh: 871019105288" maxlength="12" autocomplete="off" inputmode="text" />
     <p class="hint-text">Contoh: IC 901231-07-5678 → taip <b style="color:var(--gold-light)">871019105288</b> · IC lama: taip seperti <b style="color:var(--gold-light)">A0217464</b></p>
 
     <div class="msg-error" id="login-error"></div>
@@ -761,52 +759,19 @@
   function show(id) { document.getElementById(id).style.display = "block"; }
   function hide(id) { document.getElementById(id).style.display = "none"; }
 
-  // ── OTP BOXES ─────────────────────────────────────────
-  const BOX_COUNT = 12;
-  const boxContainer = document.getElementById("anggota-boxes");
+  // ── IC INPUT ───────────────────────────────────────────
+  const icInputField = document.getElementById("ic-input-field");
 
-  for (let i = 0; i < BOX_COUNT; i++) {
-    const inp = document.createElement("input");
-    inp.type = "text"; inp.inputMode = "text"; inp.maxLength = 1;
-    inp.className = "anggota-box"; inp.dataset.index = i;
-    inp.setAttribute("autocomplete", "off");
+  icInputField.addEventListener("input", e => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  });
 
-    inp.addEventListener("input", e => {
-      const val = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-      e.target.value = val ? val[val.length - 1] : "";
-      if (val) {
-        e.target.classList.add("filled");
-        const next = boxContainer.querySelector(`[data-index="${i+1}"]`);
-        if (next) next.focus();
-      } else {
-        e.target.classList.remove("filled");
-      }
-    });
-
-    inp.addEventListener("keydown", e => {
-      if (e.key === "Backspace" && !e.target.value) {
-        const prev = boxContainer.querySelector(`[data-index="${i-1}"]`);
-        if (prev) { prev.focus(); prev.value = ""; prev.classList.remove("filled"); }
-      }
-      if (e.key === "Enter") window.doLogin();
-    });
-
-    inp.addEventListener("paste", e => {
-      e.preventDefault();
-      const paste = (e.clipboardData || window.clipboardData).getData("text").replace(/[^a-zA-Z0-9]/g,"").toUpperCase().slice(0, BOX_COUNT);
-      const boxes = boxContainer.querySelectorAll(".anggota-box");
-      [...paste].forEach((ch, idx) => {
-        if (boxes[idx]) { boxes[idx].value = ch; boxes[idx].classList.add("filled"); }
-      });
-      const nextEmpty = [...boxes].find(b => !b.value);
-      if (nextEmpty) nextEmpty.focus();
-    });
-
-    boxContainer.appendChild(inp);
-  }
+  icInputField.addEventListener("keydown", e => {
+    if (e.key === "Enter") window.doLogin();
+  });
 
   function getAnggotaValue() {
-    return [...boxContainer.querySelectorAll(".anggota-box")].map(b => b.value).join("");
+    return icInputField.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
   }
 
   // ── LOGIN ──────────────────────────────────────────────
@@ -913,9 +878,9 @@
   window.denyIdentity = function() {
     document.getElementById("screen-confirm-id").style.display = "none";
     document.getElementById("screen-login").style.display = "block";
-    // Clear boxes
-    boxContainer.querySelectorAll(".anggota-box").forEach(b => { b.value=""; b.classList.remove("filled"); });
-    boxContainer.querySelector("[data-index='0']").focus();
+    // Clear input
+    document.getElementById("ic-input-field").value = "";
+    document.getElementById("ic-input-field").focus();
   };
 
   // ── BUILD PICK DOTS ────────────────────────────────────
