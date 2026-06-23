@@ -341,6 +341,11 @@
       document.getElementById("stat-voters").textContent  = allVoterDocs.length;
       document.getElementById("last-updated").textContent = "Dikemaskini: " + new Date().toLocaleTimeString("ms-MY");
       renderVoterTable(allVoterDocs);
+      // Re-render tally so percentage recalculates with correct voter count
+      const tallyRef = doc(db, "votes", "tally");
+      getDoc(tallyRef).then(snap => {
+        if (snap.exists()) updateTallyUI(snap.data());
+      });
     });
   }
 
@@ -360,6 +365,11 @@
     const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
     document.getElementById("stat-votes").textContent = totalVotes;
 
+    // Use totalVotes as denominator since each voter picks 4 candidates
+    // Percentage = votes for this candidate / number of voters (not total votes)
+    // If voterCount not yet loaded, fall back to totalVotes / 4
+    const denominator = voterCount > 0 ? voterCount : Math.round(totalVotes / 4) || 1;
+
     const ranked = CANDIDATES
       .map(c => ({ ...c, votes: votes[c.id] || 0 }))
       .sort((a, b) => b.votes - a.votes);
@@ -368,8 +378,8 @@
     const rClass   = ["r1","r2","r3"];
 
     document.getElementById("results-tbody").innerHTML = ranked.map((c, i) => {
-      const pct  = voterCount > 0 ? Math.round(c.votes / voterCount * 100) : 0;
-      const barW = maxVotes  > 0  ? Math.round(c.votes / maxVotes  * 100) : 0;
+      const pct  = denominator > 0 ? Math.round(c.votes / denominator * 100) : 0;
+      const barW = maxVotes   > 0  ? Math.round(c.votes / maxVotes   * 100) : 0;
       return `<tr>
         <td><span class="rank ${rClass[i] || 'rx'}">${i + 1}</span></td>
         <td><strong>${c.name}</strong></td>
