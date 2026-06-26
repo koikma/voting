@@ -92,13 +92,6 @@
       text-transform: uppercase; margin-top: 2px;
     }
 
-    .gold-rule {
-      width: 60px; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 0 auto 1.25rem;
-      animation: fadeIn 1.2s 0.3s both;
-    }
-
     .badge-pill {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--gold-dim); border: 1px solid var(--border-bright);
@@ -186,7 +179,6 @@
       color: var(--gold-light); margin-bottom: 10px;
     }
 
-    /* Single IC input */
     .ic-input {
       width: 100%;
       padding: 14px 18px;
@@ -259,6 +251,30 @@
     .admin-link a { color: var(--gold-light); text-decoration: none; font-weight: 500; }
     .admin-link a:hover { color: var(--gold); }
 
+    /* ── VOTING STATUS BANNER ────────────────────────── */
+    .status-banner {
+      display: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      animation: fadeSlideDown 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .status-banner.open {
+      display: block;
+      background: rgba(30,122,69,0.15);
+      border: 1px solid rgba(30,122,69,0.4);
+      color: #7DCEA0;
+    }
+    .status-banner.closed {
+      display: block;
+      background: rgba(176,48,48,0.15);
+      border: 1px solid rgba(176,48,48,0.4);
+      color: #F1948A;
+    }
+
     /* ── VOTING SCREEN ───────────────────────────────── */
     #screen-voting { display: none; }
 
@@ -318,7 +334,7 @@
       padding: 1.4rem 1.4rem 1.4rem 1.25rem;
       display: flex; align-items: center; gap: 1rem;
       backdrop-filter: blur(12px);
-      transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, background 0.25s;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, background 0.25s, opacity 0.3s;
       animation: cardReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;
       overflow: hidden;
     }
@@ -327,7 +343,7 @@
       background: linear-gradient(135deg, rgba(201,148,10,0.06), transparent);
       opacity: 0; transition: opacity 0.3s;
     }
-    .cand-card:hover { border-color: rgba(201,148,10,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,148,10,0.1); }
+    .cand-card:hover:not(.disabled) { border-color: rgba(201,148,10,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,148,10,0.1); }
     .cand-card:hover::before { opacity: 1; }
     .cand-card.selected {
       border-color: var(--gold);
@@ -336,6 +352,7 @@
     }
     .cand-card.selected::before { opacity: 1; }
     .cand-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .cand-card.voting-closed { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
     .cand-avatar {
       width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
@@ -521,6 +538,29 @@
     }
     .btn-ghost:hover { border-color: rgba(201,148,10,0.5); color: var(--off-white); background: rgba(201,148,10,0.06); }
 
+    .btn-ghost-danger {
+      padding: 11px 22px; border: 1.5px solid rgba(176,48,48,0.3);
+      background: transparent; border-radius: 10px;
+      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; color: #F1948A;
+      transition: all 0.2s;
+    }
+    .btn-ghost-danger:hover { border-color: rgba(176,48,48,0.6); background: rgba(176,48,48,0.1); }
+
+    /* ── TOAST ────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #1E6B3C; color: #fff;
+      padding: 10px 24px; border-radius: 100px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      z-index: 9999; opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: var(--red); }
+
     /* ── ANIMATIONS ──────────────────────────────────── */
     @keyframes fadeSlideDown {
       from { opacity: 0; transform: translateY(-16px); }
@@ -530,7 +570,6 @@
       from { opacity: 0; } to { opacity: 1; }
     }
 
-    /* Stagger cards */
     .cand-card:nth-child(1) { animation-delay: 0.05s; }
     .cand-card:nth-child(2) { animation-delay: 0.10s; }
     .cand-card:nth-child(3) { animation-delay: 0.15s; }
@@ -544,7 +583,6 @@
       .candidates-grid { grid-template-columns: 1fr; }
       .glass-card, .done-card { padding: 2rem 1.5rem; }
       .vote-topbar, .submit-bar { flex-direction: column; align-items: flex-start; }
-      
     }
   </style>
 </head>
@@ -591,6 +629,7 @@
     <input type="text" class="ic-input" id="ic-input-field" placeholder="Contoh: 871019105288" maxlength="20" autocomplete="off" inputmode="text" />
     <p class="hint-text">Masukkan IC penuh tanpa sempang. Contoh: IC 901231-07-5678 → taip <b style="color:var(--gold-light)">901231075678</b></p>
 
+    <div id="login-status-banner" class="status-banner"></div>
     <div class="msg-error" id="login-error"></div>
     <div class="msg-info"  id="login-info"></div>
 
@@ -656,6 +695,9 @@
 
 <!-- VOTING -->
 <div class="container" id="screen-voting">
+  <!-- ── VOTING STATUS BANNER ── -->
+  <div id="voting-status-banner" class="status-banner"></div>
+
   <div class="vote-topbar">
     <div class="voter-info">
       <div class="voter-label">Pengundi Disahkan</div>
@@ -709,11 +751,16 @@
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { 
+    getFirestore, doc, getDoc, setDoc, updateDoc, increment, 
+    serverTimestamp, onSnapshot, deleteDoc 
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ══════════════════════════════════════════════════════
   // 🔧 FIREBASE CONFIG
@@ -730,24 +777,20 @@
   // ══════════════════════════════════════════════════════
   // 🔧 SENARAI CALON
   // ══════════════════════════════════════════════════════
-  window.CANDIDATES = [
-    { id: "c1", name: "Norbiha Binti Kasmuri",  position: "IKMa",        initials: "1" },
-    { id: "c2", name: "Julizah Binti Sabstu",    position: "IKMa",            initials: "2" },
-    { id: "c3", name: "Muhamad Shafiq Bin Mohd Noor",     position: "IKMa",     initials: "3" },
-    { id: "c4", name: "Salwana Binti Ali",   position: "IKMa",        initials: "4" },
-    { id: "c5", name: "Calon 5",   position: "IKMa",  initials: "5" },
-    { id: "c6", name: "Calon 6",           position: "IKMa",      initials: "6" },
-    { id: "c7", name: "Calon 7",          position: "IKMa",                       initials: "7" },
+  const CANDIDATES = [
+    { id: "c1", name: "Norbiha Binti Kasmuri",  position: "IKMa", initials: "1" },
+    { id: "c2", name: "Julizah Binti Sabstu",   position: "IKMa", initials: "2" },
+    { id: "c3", name: "Muhamad Shafiq Bin Mohd Noor", position: "IKMa", initials: "3" },
+    { id: "c4", name: "Salwana Binti Ali",      position: "IKMa", initials: "4" },
+    { id: "c5", name: "Calon 5",                position: "IKMa", initials: "5" },
+    { id: "c6", name: "Calon 6",                position: "IKMa", initials: "6" },
+    { id: "c7", name: "Calon 7",                position: "IKMa", initials: "7" },
   ];
+
   // ══════════════════════════════════════════════════════
-
-  const MAX_PICKS = 4;
-  let db, currentAnggota, currentMemberName;
-  let selected = new Set();
-
-  // ── MEMBER LOOKUP with FULL IC NUMBERS ──────────────
+  // 🔧 MEMBER LOOKUP
+  // ══════════════════════════════════════════════════════
   const MEMBER_LOOKUP = {
-    // Full IC numbers without hyphens
     "871019105288": ["ADILAH BT AHMAD GHAZALI"],
     "580603015003": ["ZAINUL ABIDIN B. A. KADIR"],
     "581016095058": ["HALIMAH RABIAH BT HJ ASMUNI"],
@@ -1065,12 +1108,24 @@
     "443876": ["HJH HASMAH BT ABD HAMID."]
   };
 
-  // Init Firebase
+  // ══════════════════════════════════════════════════════
+  // 🔧 GLOBALS
+  // ══════════════════════════════════════════════════════
+  const MAX_PICKS = 4;
+  let db, currentAnggota, currentMemberName;
+  let selected = new Set();
+  let votingIsOpen = false;
+  let statusListenerUnsubscribe = null;
+
+  // ══════════════════════════════════════════════════════
+  // 🔧 INIT FIREBASE
+  // ══════════════════════════════════════════════════════
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     show("screen-login");
     hide("screen-loading");
+    startVotingStatusListener();
   } catch(e) {
     document.querySelector("#screen-loading p").textContent = "Ralat: Gagal menyambung ke sistem.";
     console.error(e);
@@ -1079,7 +1134,94 @@
   function show(id) { document.getElementById(id).style.display = "block"; }
   function hide(id) { document.getElementById(id).style.display = "none"; }
 
-  // ── IC INPUT ───────────────────────────────────────────
+  function showToast(msg, isError = false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show" + (isError ? " error" : "");
+    setTimeout(() => { t.className = "toast"; }, 3000);
+  }
+
+  // ══════════════════════════════════════════════════════
+  // 🔧 VOTING STATUS
+  // ══════════════════════════════════════════════════════
+  async function isVotingOpen() {
+    try {
+      const statusRef = doc(db, "config", "votingStatus");
+      const snap = await getDoc(statusRef);
+      if (snap.exists()) {
+        return snap.data().isOpen !== false;
+      }
+      return false; // Default to closed if status doesn't exist
+    } catch(e) {
+      console.error("Error checking voting status:", e);
+      return false;
+    }
+  }
+
+  function startVotingStatusListener() {
+    const statusRef = doc(db, "config", "votingStatus");
+    statusListenerUnsubscribe = onSnapshot(statusRef, (snap) => {
+      const isOpen = snap.exists() ? snap.data().isOpen !== false : false;
+      votingIsOpen = isOpen;
+      updateStatusBanner(isOpen);
+      
+      // Update UI if voting screen is visible
+      if (document.getElementById("screen-voting").style.display !== "none") {
+        updateVotingUIStatus(isOpen);
+      }
+    }, (err) => {
+      console.error("Status listener error:", err);
+    });
+  }
+
+  function updateStatusBanner(isOpen) {
+    const loginBanner = document.getElementById("login-status-banner");
+    const votingBanner = document.getElementById("voting-status-banner");
+
+    if (isOpen) {
+      loginBanner.className = "status-banner open";
+      loginBanner.textContent = "✅ Pengundian DIBUKA — Anda boleh mengundi sekarang.";
+      if (votingBanner) {
+        votingBanner.className = "status-banner open";
+        votingBanner.textContent = "✅ Pengundian DIBUKA — Anda boleh mengundi sekarang.";
+      }
+    } else {
+      loginBanner.className = "status-banner closed";
+      loginBanner.textContent = "🔒 Pengundian DITUTUP — Sila tunggu sehingga dibuka semula.";
+      if (votingBanner) {
+        votingBanner.className = "status-banner closed";
+        votingBanner.textContent = "🔒 Pengundian DITUTUP — Tiada undi baru akan diterima.";
+      }
+    }
+  }
+
+  function updateVotingUIStatus(isOpen) {
+    const cards = document.querySelectorAll('.cand-card');
+    const submitBtn = document.getElementById("submit-btn");
+    
+    if (!isOpen) {
+      // Disable all cards
+      cards.forEach(card => {
+        card.classList.add('voting-closed');
+      });
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.title = "Pengundian ditutup";
+    } else {
+      // Re-enable cards (but keep disabled state for unselected when full)
+      cards.forEach(card => {
+        card.classList.remove('voting-closed');
+      });
+      // Update submit button state based on selection
+      const count = selected.size;
+      submitBtn.disabled = count !== MAX_PICKS;
+      submitBtn.title = "";
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  // 🔧 IC INPUT
+  // ══════════════════════════════════════════════════════
   const icInputField = document.getElementById("ic-input-field");
 
   icInputField.addEventListener("input", e => {
@@ -1094,33 +1236,42 @@
     return icInputField.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
   }
 
-  // ── LOGIN ──────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════
+  // 🔧 LOGIN
+  // ══════════════════════════════════════════════════════
   window.doLogin = async function() {
     const ic6 = getAnggotaValue();
     const err = document.getElementById("login-error");
     const btn = document.getElementById("login-btn");
     err.style.display = "none";
 
+    // Check if voting is open
+    const open = await isVotingOpen();
+    if (!open) {
+      err.textContent = "⚠️ Pengundian sedang DITUTUP. Sila cuba semula kemudian.";
+      err.style.display = "block";
+      return;
+    }
+
     const ic6Upper = ic6.toUpperCase();
     if (ic6.length < 6 || ic6.length > 20) {
       err.textContent = "Nombor IC tidak sah. Sila masukkan antara 6 hingga 20 digit.";
-      err.style.display = "block"; return;
+      err.style.display = "block"; 
+      return;
     }
 
-    // Look up member in local list
     const matches = MEMBER_LOOKUP[ic6Upper];
     if (!matches || matches.length === 0) {
       err.textContent = "IC ini tidak dijumpai dalam senarai anggota. Sila semak dan cuba semula.";
-      err.style.display = "block"; return;
+      err.style.display = "block"; 
+      return;
     }
 
-    // If duplicate IC — show name picker
     if (matches.length > 1) {
       showNamePicker(ic6Upper, matches);
       return;
     }
 
-    // Single match — proceed to confirm
     proceedWithName(ic6Upper, matches[0]);
   };
 
@@ -1153,7 +1304,6 @@
   };
 
   async function proceedWithName(ic6, memberName) {
-    // Show confirm identity screen
     document.getElementById("confirm-name-display").textContent = memberName;
     document.getElementById("ic6-store").value = ic6;
     document.getElementById("name-store").value = memberName;
@@ -1161,6 +1311,9 @@
     document.getElementById("screen-confirm-id").style.display = "block";
   }
 
+  // ══════════════════════════════════════════════════════
+  // 🔧 CONFIRM IDENTITY
+  // ══════════════════════════════════════════════════════
   window.confirmIdentity = async function() {
     const ic6 = document.getElementById("ic6-store").value;
     const memberName = document.getElementById("name-store").value;
@@ -1171,6 +1324,16 @@
     btn.innerHTML = '<div class="loader-ring" style="width:18px;height:18px;margin:0;border-width:2px"></div> Menyemak...';
 
     try {
+      // Check if voting is still open
+      const open = await isVotingOpen();
+      if (!open) {
+        err.textContent = "⚠️ Pengundian telah DITUTUP. Sila cuba semula kemudian.";
+        err.style.display = "block";
+        btn.disabled = false;
+        btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
+        return;
+      }
+
       const voterRef = doc(db, "voters", ic6 + "_" + memberName.replace(/\s+/g,"_").slice(0,20));
       const snap = await getDoc(voterRef);
       if (snap.exists() && snap.data().voted) {
@@ -1180,12 +1343,17 @@
         btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
         return;
       }
+      
       currentAnggota = ic6 + "_" + memberName.replace(/[\s\/\.#\$\[\]]/g,"_").slice(0,20);
       currentMemberName = memberName;
       document.getElementById("voter-display").textContent = memberName;
       document.getElementById("screen-confirm-id").style.display = "none";
       renderCandidates();
       show("screen-voting");
+      
+      // Apply voting status to UI
+      updateVotingUIStatus(votingIsOpen);
+      
     } catch(e) {
       err.textContent = "Ralat sambungan. Sila cuba semula.";
       err.style.display = "block";
@@ -1198,26 +1366,27 @@
   window.denyIdentity = function() {
     document.getElementById("screen-confirm-id").style.display = "none";
     document.getElementById("screen-login").style.display = "block";
-    // Clear input
     document.getElementById("ic-input-field").value = "";
     document.getElementById("ic-input-field").focus();
   };
 
-  // ── BUILD PICK DOTS ────────────────────────────────────
+  // ══════════════════════════════════════════════════════
+  // 🔧 VOTING UI
+  // ══════════════════════════════════════════════════════
   function buildDots() {
     const c = document.getElementById("pick-dots");
     c.innerHTML = "";
     for (let i = 0; i < MAX_PICKS; i++) {
       const d = document.createElement("div");
-      d.className = "pick-dot"; d.id = "pdot-" + i;
+      d.className = "pick-dot"; 
+      d.id = "pdot-" + i;
       c.appendChild(d);
     }
   }
 
-  // ── RENDER CANDIDATES ──────────────────────────────────
   function renderCandidates() {
     buildDots();
-    document.getElementById("candidates-grid").innerHTML = window.CANDIDATES.map((c, i) => `
+    document.getElementById("candidates-grid").innerHTML = CANDIDATES.map((c, i) => `
       <div class="cand-card" id="card-${c.id}" onclick="toggleCandidate('${c.id}')">
         <div class="cand-avatar">${c.initials}</div>
         <div class="cand-info">
@@ -1228,16 +1397,27 @@
         <div class="cand-check">✓</div>
       </div>
     `).join("");
+    
+    // Apply voting status
+    updateVotingUIStatus(votingIsOpen);
   }
 
   window.toggleCandidate = function(id) {
+    if (!votingIsOpen) {
+      showToast("⚠️ Pengundian sedang ditutup.", true);
+      return;
+    }
+    
     const card = document.getElementById("card-" + id);
-    if (card.classList.contains("disabled")) return;
+    if (card.classList.contains("disabled") || card.classList.contains("voting-closed")) return;
+    
     if (selected.has(id)) {
-      selected.delete(id); card.classList.remove("selected");
+      selected.delete(id); 
+      card.classList.remove("selected");
     } else {
       if (selected.size >= MAX_PICKS) return;
-      selected.add(id); card.classList.add("selected");
+      selected.add(id); 
+      card.classList.add("selected");
     }
     updateUI();
   };
@@ -1245,60 +1425,77 @@
   function updateUI() {
     const count = selected.size;
     document.getElementById("count-display").textContent = count;
-    document.getElementById("submit-btn").disabled = count !== MAX_PICKS;
+    document.getElementById("submit-btn").disabled = count !== MAX_PICKS || !votingIsOpen;
     document.getElementById("progress-fill").style.width = (count / MAX_PICKS * 100) + "%";
     document.getElementById("progress-text").textContent = count + " / " + MAX_PICKS;
 
-    // Dots
     for (let i = 0; i < MAX_PICKS; i++) {
       const d = document.getElementById("pdot-" + i);
       if (d) d.classList.toggle("lit", i < count);
     }
 
-    // Disable unselected when full
-    window.CANDIDATES.forEach(c => {
+    CANDIDATES.forEach(c => {
       const card = document.getElementById("card-" + c.id);
+      if (!card) return;
       if (!selected.has(c.id) && count >= MAX_PICKS) card.classList.add("disabled");
       else card.classList.remove("disabled");
     });
   }
 
-  // ── CONFIRM ────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════
+  // 🔧 CONFIRM & SUBMIT
+  // ══════════════════════════════════════════════════════
   window.openConfirm = function() {
-    const items = [...selected].map((id, i) => {
-      const c = window.CANDIDATES.find(x => x.id === id);
+    if (!votingIsOpen) {
+      showToast("⚠️ Pengundian sedang ditutup.", true);
+      return;
+    }
+    
+    const items = [...selected].map((id) => {
+      const c = CANDIDATES.find(x => x.id === id);
       return `<div class="modal-cand-item"><span class="modal-cand-icon">👤</span>${c.name}<span style="margin-left:auto;font-size:11px;color:var(--muted)">${c.position}</span></div>`;
     }).join("");
     document.getElementById("confirm-list").innerHTML = items;
     document.getElementById("confirm-modal").classList.add("active");
   };
+
   window.closeConfirm = function() {
     document.getElementById("confirm-modal").classList.remove("active");
   };
 
-  // ── SUBMIT ─────────────────────────────────────────────
   window.submitVote = async function() {
     const btn = document.getElementById("confirm-submit-btn");
     btn.disabled = true;
     btn.innerHTML = '<div class="loader-ring" style="width:16px;height:16px;margin:0;border-width:2px;border-top-color:var(--obsidian)"></div> Menghantar...';
 
     try {
+      // ── CHECK IF VOTING IS STILL OPEN ──
+      const open = await isVotingOpen();
+      if (!open) {
+        alert("⚠️ Pengundian telah DITUTUP. Undi anda tidak dapat dihantar.");
+        closeConfirm();
+        btn.disabled = false;
+        btn.innerHTML = 'Ya, Hantar Undi';
+        return;
+      }
+
       const voterRef = doc(db, "voters", currentAnggota);
       const snap = await getDoc(voterRef);
       if (snap.exists() && snap.data().voted) {
-        alert("Nombor Anggota ini telah mengundi.");
-        closeConfirm(); location.reload(); return;
+        alert("Anda telah mengundi sebelum ini.");
+        closeConfirm(); 
+        location.reload(); 
+        return;
       }
 
-      // Save voter record including which candidates they picked
-      const pickedNames = [...selected].map(id => window.CANDIDATES.find(c => c.id === id).name);
+      const pickedNames = [...selected].map(id => CANDIDATES.find(c => c.id === id).name);
       await setDoc(voterRef, {
         voted: true,
         votedAt: serverTimestamp(),
         anggota: currentAnggota,
         namaPengundi: currentMemberName,
-        pilihan: [...selected],          // e.g. ["c1","c3","c4","c6"]
-        pilihanNama: pickedNames          // e.g. ["Ahmad","Siti","Nor","Cikyed"]
+        pilihan: [...selected],
+        pilihanNama: pickedNames
       });
 
       const voteRef = doc(db, "votes", "tally");
@@ -1309,23 +1506,25 @@
         await updateDoc(voteRef, updateData);
       } else {
         const init = {};
-        window.CANDIDATES.forEach(c => { init[c.id] = 0; });
+        CANDIDATES.forEach(c => { init[c.id] = 0; });
         selected.forEach(id => { init[id] = 1; });
         await setDoc(voteRef, init);
       }
 
-      const chosen = [...selected].map(id => window.CANDIDATES.find(c => c.id === id));
+      const chosen = [...selected].map(id => CANDIDATES.find(c => c.id === id));
       document.getElementById("done-list").innerHTML = chosen.map((c, i) =>
         `<div class="chosen-item">
           <div class="chosen-item-dot"></div>
           <span>${c.name}</span>
-          <span class="chosen-item-num">Calon ${window.CANDIDATES.findIndex(x=>x.id===c.id)+1}</span>
+          <span class="chosen-item-num">Calon ${CANDIDATES.findIndex(x=>x.id===c.id)+1}</span>
         </div>`
       ).join("");
 
       closeConfirm();
       hide("screen-voting");
       show("screen-done");
+      showToast("✅ Undi anda berjaya dihantar!");
+
     } catch(e) {
       alert("Ralat semasa menghantar undi. Sila cuba semula.");
       btn.disabled = false;
@@ -1333,6 +1532,16 @@
       console.error(e);
     }
   };
+
+  // ══════════════════════════════════════════════════════
+  // 🔧 CLEANUP
+  // ══════════════════════════════════════════════════════
+  window.addEventListener('beforeunload', function() {
+    if (statusListenerUnsubscribe) {
+      statusListenerUnsubscribe();
+    }
+  });
+
 </script>
 </body>
 </html>
