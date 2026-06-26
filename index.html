@@ -3,720 +3,314 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pengundian Anggota Lembaga — KoIKMa</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Keputusan Pengundian — Pentadbir</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --obsidian: #070B14;
-      --deep: #0C1220;
-      --navy: #0F1B35;
-      --navy-mid: #162444;
-      --gold: #C9940A;
-      --gold-light: #E8B84B;
-      --gold-pale: #F5E6A3;
-      --gold-dim: rgba(201,148,10,0.15);
-      --gold-glow: rgba(201,148,10,0.35);
-      --white: #FFFFFF;
-      --off-white: #F0EDE6;
-      --muted: #8A90A0;
-      --border: rgba(201,148,10,0.18);
-      --border-bright: rgba(201,148,10,0.5);
-      --red: #B03030;
-      --green: #1E7A45;
-      --radius: 16px;
+      --gold: #B8860B; --gold-light: #F5E6A3;
+      --navy: #0D1B3E; --navy-light: #1A2F5E;
+      --cream: #FAF8F2; --white: #FFFFFF;
+      --text: #1A1A2E; --muted: #5A5A7A;
+      --border: rgba(184,134,11,0.2); --radius: 12px;
+      --red: #C0392B; --green: #1E6B3C;
     }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--obsidian);
-      color: var(--off-white);
-      min-height: 100vh;
-      overflow-x: hidden;
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    header { background: var(--navy); padding: 1.5rem 2rem; text-align: center; }
+    .badge {
+      display: inline-block; background: rgba(184,134,11,0.15); border: 1px solid rgba(184,134,11,0.4);
+      color: var(--gold-light); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 16px; border-radius: 100px; margin-bottom: 10px;
     }
+    header h1 { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.6rem; }
+    header h1 span { color: var(--gold-light); }
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
 
-    /* ── AMBIENT BACKGROUND ──────────────────────────── */
-    .bg-canvas {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    }
-    .bg-orb {
-      position: absolute; border-radius: 50%;
-      filter: blur(120px); opacity: 0.12;
-    }
-    .bg-orb-1 { width: 700px; height: 700px; background: var(--gold); top: -200px; left: -200px; animation: drift1 18s ease-in-out infinite alternate; }
-    .bg-orb-2 { width: 500px; height: 500px; background: #1A3A8F; bottom: -100px; right: -100px; animation: drift2 22s ease-in-out infinite alternate; }
-    .bg-orb-3 { width: 300px; height: 300px; background: var(--gold-light); top: 50%; left: 55%; animation: drift3 14s ease-in-out infinite alternate; }
-
-    @keyframes drift1 { to { transform: translate(80px, 60px); } }
-    @keyframes drift2 { to { transform: translate(-60px, -80px); } }
-    @keyframes drift3 { to { transform: translate(40px, -60px) scale(1.2); } }
-
-    .bg-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(201,148,10,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,148,10,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-
-    /* ── HEADER ──────────────────────────────────────── */
-    header {
-      position: relative; z-index: 10;
-      padding: 3rem 2rem 2.5rem;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(to bottom, rgba(7,11,20,0.95), rgba(7,11,20,0.6));
-      backdrop-filter: blur(20px);
-    }
-
-    .header-inner { max-width: 700px; margin: 0 auto; }
-
-    .logo-lockup {
-      display: flex; align-items: center; justify-content: center;
-      gap: 18px; margin-bottom: 1.5rem;
-      animation: fadeSlideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
-    }
-    .logo-lockup img { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(201,148,10,0.4)); }
-    .logo-text { text-align: left; }
-    .logo-text .org-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--gold-light);
-      line-height: 1.5;
-    }
-    .logo-text .org-sub {
-      font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
-      text-transform: uppercase; margin-top: 2px;
-    }
-
-    .gold-rule {
-      width: 60px; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 0 auto 1.25rem;
-      animation: fadeIn 1.2s 0.3s both;
-    }
-
-    .badge-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--gold-dim); border: 1px solid var(--border-bright);
-      color: var(--gold-pale); font-size: 10px; font-weight: 600;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      padding: 5px 18px; border-radius: 100px; margin-bottom: 1.25rem;
-      animation: fadeSlideDown 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) both;
-    }
-    .badge-dot { width: 6px; height: 6px; background: var(--gold-light); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
-
-    header h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 700; line-height: 1.15;
-      color: var(--white); margin-bottom: 8px;
-      animation: fadeSlideDown 0.8s 0.25s cubic-bezier(0.16,1,0.3,1) both;
-    }
-    header h1 em { font-style: italic; color: var(--gold-light); }
-
-    header .subtitle {
-      color: var(--muted); font-size: 14px; font-weight: 400;
-      letter-spacing: 0.02em;
-      animation: fadeSlideDown 0.8s 0.35s cubic-bezier(0.16,1,0.3,1) both;
-    }
-
-    /* ── CONTAINER ───────────────────────────────────── */
-    .container { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; position: relative; z-index: 10; }
-
-    /* ── LOADING ─────────────────────────────────────── */
-    #screen-loading {
-      text-align: center; padding: 6rem 1rem;
-    }
-    .loader-ring {
-      width: 52px; height: 52px; margin: 0 auto 1.5rem;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      border-top-color: var(--gold);
-      animation: spin 0.9s linear infinite;
+    #screen-loading { text-align: center; padding: 4rem 1rem; }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid rgba(13,27,62,0.1);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #screen-loading p { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+    #screen-loading p { color: var(--muted); font-size: 14px; }
 
-    /* ── LOGIN CARD ───────────────────────────────────── */
-    #screen-login { max-width: 480px; margin: 0 auto; display: none; }
-
-    .glass-card {
-      background: linear-gradient(135deg, rgba(22,36,68,0.7), rgba(12,18,32,0.85));
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 3rem;
-      backdrop-filter: blur(24px);
-      box-shadow:
-        0 0 0 1px rgba(201,148,10,0.05) inset,
-        0 32px 80px rgba(0,0,0,0.5),
-        0 0 60px rgba(201,148,10,0.06);
-      animation: cardReveal 0.9s cubic-bezier(0.16,1,0.3,1) both;
+    #screen-auth { max-width: 360px; margin: 3rem auto; display: none; }
+    .card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; text-align: center;
     }
-
-    @keyframes cardReveal {
-      from { opacity: 0; transform: translateY(32px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+    .card h2 { font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: 13px; margin-bottom: 1.5rem; }
+    label { display: block; text-align: left; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+    input[type="password"] {
+      width: 100%; padding: 11px 14px; border: 1.5px solid rgba(13,27,62,0.15);
+      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+      background: var(--cream); color: var(--text); outline: none; transition: border-color 0.2s;
     }
-
-    .card-icon {
-      width: 56px; height: 56px; margin: 0 auto 1.5rem;
-      background: var(--gold-dim); border: 1px solid var(--border-bright);
-      border-radius: 14px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-    }
-
-    .glass-card h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.7rem; font-weight: 700; color: var(--white);
-      text-align: center; margin-bottom: 6px;
-    }
-    .glass-card .desc {
-      text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.65;
-      margin-bottom: 2.25rem;
-    }
-
-    .field-label {
-      display: block; font-size: 11px; font-weight: 600;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--gold-light); margin-bottom: 10px;
-    }
-
-    /* Single IC input */
-    .ic-input {
-      width: 100%;
-      padding: 14px 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1.5px solid rgba(201,148,10,0.25);
-      border-radius: 12px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.3rem; font-weight: 700; letter-spacing: 0.15em;
-      color: var(--gold-light);
-      caret-color: var(--gold);
-      outline: none;
-      text-align: center;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-      -webkit-appearance: none;
-      margin-bottom: 0.5rem;
-    }
-    .ic-input:focus {
-      border-color: var(--gold);
-      background: rgba(201,148,10,0.07);
-      box-shadow: 0 0 0 3px rgba(201,148,10,0.18), 0 4px 20px rgba(201,148,10,0.12);
-    }
-    .ic-input::placeholder { color: rgba(201,148,10,0.25); font-size: 1rem; letter-spacing: 0.05em; font-weight: 400; }
-
-    .hint-text { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; margin-bottom: 1.75rem; }
-
-    .msg-error {
-      background: rgba(176,48,48,0.12); border: 1px solid rgba(176,48,48,0.35);
-      color: #F1948A; border-radius: 10px; padding: 12px 16px;
-      font-size: 13px; margin-bottom: 1rem; display: none;
-      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-    }
-    @keyframes shake {
-      10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)}
-      30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)}
-    }
-    .msg-info {
-      background: rgba(30,100,180,0.12); border: 1px solid rgba(30,100,180,0.3);
-      color: #AED6F1; border-radius: 10px; padding: 12px 16px;
-      font-size: 13px; margin-bottom: 1rem; display: none;
-    }
-
+    input[type="password"]:focus { border-color: var(--gold); background: var(--white); }
     .btn-primary {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; padding: 15px;
-      background: linear-gradient(135deg, var(--gold) 0%, #B07808 100%);
-      color: var(--obsidian); border: none; border-radius: 12px;
-      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
-      cursor: pointer; letter-spacing: 0.04em;
-      transition: all 0.25s; position: relative; overflow: hidden;
+      display: block; width: 100%; margin-top: 1rem; padding: 12px;
+      background: var(--navy); color: var(--white); border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
     }
-    .btn-primary::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .btn-primary:hover::before { opacity: 1; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,148,10,0.4); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { background: rgba(201,148,10,0.2); color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn-arrow { transition: transform 0.2s; }
-    .btn-primary:not(:disabled):hover .btn-arrow { transform: translateX(4px); }
+    .btn-primary:hover { background: var(--navy-light); }
+    .err { color: var(--red); font-size: 13px; margin-top: 8px; }
 
-    .divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
-    .divider-line { flex: 1; height: 1px; background: var(--border); }
-    .divider-text { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    #screen-results { display: none; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem; text-align: center;
+    }
+    .stat-card .num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--navy); }
+    .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    .admin-link {
-      text-align: center; font-size: 12px; color: var(--muted);
-    }
-    .admin-link a { color: var(--gold-light); text-decoration: none; font-weight: 500; }
-    .admin-link a:hover { color: var(--gold); }
+    .results-table { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem; }
+    .results-table h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); color: var(--navy); }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 1.25rem; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--cream); }
+    td { padding: 12px 1.25rem; border-top: 1px solid rgba(13,27,62,0.06); font-size: 14px; vertical-align: middle; }
+    .rank { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; font-weight: 600; }
+    .r1 { background: #FFF3CD; color: #856404; }
+    .r2 { background: #E8E8E8; color: #444; }
+    .r3 { background: #FDEBD0; color: #784212; }
+    .rx { background: var(--cream); color: var(--muted); }
+    .bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .bar-bg { flex: 1; height: 8px; background: rgba(13,27,62,0.07); border-radius: 100px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 100px; background: var(--gold); transition: width 0.6s ease; }
+    .bar-pct { font-size: 13px; font-weight: 600; color: var(--navy); min-width: 40px; text-align: right; }
 
-    /* ── VOTING SCREEN ───────────────────────────────── */
-    #screen-voting { display: none; }
+    .btn-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .btn-outline { padding: 9px 18px; border: 1.5px solid rgba(13,27,62,0.2); background: var(--white); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--navy); }
+    .btn-outline:hover { background: var(--cream); }
+    .btn-danger { padding: 9px 18px; border: 1.5px solid rgba(192,57,43,0.3); background: transparent; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--red); }
+    .btn-danger:hover { background: #FDECEA; }
+    .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .vote-topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 14px; margin-bottom: 2rem;
-      padding: 1.25rem 1.75rem;
-      background: linear-gradient(135deg, rgba(22,36,68,0.6), rgba(12,18,32,0.7));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      backdrop-filter: blur(16px);
-      animation: fadeSlideDown 0.6s cubic-bezier(0.16,1,0.3,1) both;
-    }
-    .voter-info { display: flex; flex-direction: column; gap: 3px; }
-    .voter-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-light); }
-    .voter-id { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--white); }
+    .live-badge { display: inline-flex; align-items: center; gap: 6px; background: #EAF7EE; border: 1px solid #A9DFBF; color: #1E6B3C; border-radius: 100px; padding: 5px 14px; font-size: 12px; font-weight: 600; }
+    .live-dot { width: 8px; height: 8px; background: #27AE60; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
-    .pick-counter {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .pick-dots { display: flex; gap: 6px; }
-    .pick-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      border: 1.5px solid rgba(201,148,10,0.35);
-      background: transparent;
-      transition: background 0.25s, border-color 0.25s, transform 0.2s;
-    }
-    .pick-dot.lit {
-      background: var(--gold);
-      border-color: var(--gold);
-      box-shadow: 0 0 8px rgba(201,148,10,0.6);
-      transform: scale(1.2);
-    }
-    .pick-label { font-size: 13px; color: var(--muted); }
-    .pick-label strong { color: var(--gold-pale); }
+    .back-link { font-size: 13px; margin-top: 1.5rem; text-align: center; color: var(--muted); }
+    .back-link a { color: var(--navy); text-decoration: none; font-weight: 500; }
 
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem; font-weight: 600;
-      color: var(--off-white); letter-spacing: 0.04em;
-      margin-bottom: 1rem;
-    }
-    .section-title span { color: var(--gold-light); }
+    .voted-section { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1rem; }
+    .voted-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
 
-    /* ── CANDIDATE GRID ──────────────────────────────── */
-    .candidates-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px; margin-bottom: 2rem;
-    }
-
-    .cand-card {
-      position: relative; cursor: pointer;
-      background: linear-gradient(135deg, rgba(22,36,68,0.55), rgba(12,18,32,0.65));
-      border: 1.5px solid rgba(201,148,10,0.15);
-      border-radius: 18px;
-      padding: 1.4rem 1.4rem 1.4rem 1.25rem;
-      display: flex; align-items: center; gap: 1rem;
-      backdrop-filter: blur(12px);
-      transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, background 0.25s;
-      animation: cardReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;
-      overflow: hidden;
-    }
-    .cand-card::before {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(135deg, rgba(201,148,10,0.06), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .cand-card:hover { border-color: rgba(201,148,10,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,148,10,0.1); }
-    .cand-card:hover::before { opacity: 1; }
-    .cand-card.selected {
-      border-color: var(--gold);
-      background: linear-gradient(135deg, rgba(201,148,10,0.12), rgba(12,18,32,0.75));
-      box-shadow: 0 8px 32px rgba(201,148,10,0.2), 0 0 0 1px rgba(201,148,10,0.2);
-    }
-    .cand-card.selected::before { opacity: 1; }
-    .cand-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
-
-    .cand-avatar {
-      width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--navy-mid), var(--navy));
-      border: 1.5px solid rgba(201,148,10,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem; font-weight: 700; color: var(--gold-pale);
-      transition: border-color 0.25s, box-shadow 0.25s;
-    }
-    .cand-card.selected .cand-avatar {
-      border-color: var(--gold);
-      box-shadow: 0 0 16px rgba(201,148,10,0.3);
-    }
-
-    .cand-info { flex: 1; min-width: 0; }
-    .cand-name { font-weight: 600; font-size: 15px; color: var(--off-white); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cand-pos  { font-size: 12px; color: var(--muted); line-height: 1.45; }
-
-    .cand-number {
-      position: absolute; top: 12px; right: 14px;
-      font-size: 10px; font-weight: 700; color: rgba(201,148,10,0.35);
-      letter-spacing: 0.08em;
-    }
-    .cand-card.selected .cand-number { color: rgba(201,148,10,0.6); }
-
-    .cand-check {
-      position: absolute; top: -6px; right: -6px;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold));
-      color: var(--obsidian); font-size: 11px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transform: scale(0) rotate(-30deg);
-      transition: opacity 0.25s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-      box-shadow: 0 0 12px rgba(201,148,10,0.5);
-    }
-    .cand-card.selected .cand-check { opacity: 1; transform: scale(1) rotate(0deg); }
-
-    /* ── SUBMIT BAR ──────────────────────────────────── */
-    .submit-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 1rem; flex-wrap: wrap;
-      padding: 1.25rem 1.75rem;
-      background: linear-gradient(135deg, rgba(22,36,68,0.6), rgba(12,18,32,0.7));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      backdrop-filter: blur(16px);
-    }
-    .submit-info p { font-size: 13.5px; color: var(--muted); }
-    .submit-info p strong { color: var(--off-white); }
-    .submit-info .progress-track {
-      display: flex; align-items: center; gap: 8px; margin-top: 8px;
-    }
-    .progress-bar {
-      flex: 1; height: 4px; background: rgba(201,148,10,0.15); border-radius: 2px; max-width: 120px;
-    }
-    .progress-fill {
-      height: 100%; border-radius: 2px;
-      background: linear-gradient(90deg, var(--gold), var(--gold-light));
-      transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .progress-text { font-size: 11px; color: var(--gold-light); font-weight: 600; }
-
-    .btn-submit {
-      padding: 13px 32px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--gold) 0%, #9A6A00 100%);
-      color: var(--obsidian); border: none; border-radius: 12px;
-      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
-      cursor: pointer; letter-spacing: 0.03em;
-      transition: all 0.25s; position: relative; overflow: hidden;
-    }
-    .btn-submit::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .btn-submit:hover::before { opacity: 1; }
-    .btn-submit:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,148,10,0.45); }
-    .btn-submit:disabled { background: rgba(201,148,10,0.12); color: rgba(255,255,255,0.2); cursor: not-allowed; }
-
-    /* ── DONE SCREEN ─────────────────────────────────── */
-    #screen-done { display: none; max-width: 540px; margin: 0 auto; }
-
-    .done-card {
-      background: linear-gradient(135deg, rgba(22,36,68,0.7), rgba(12,18,32,0.85));
-      border: 1px solid var(--border);
-      border-radius: 24px; padding: 3.5rem 2.5rem;
-      backdrop-filter: blur(24px);
-      text-align: center;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(201,148,10,0.06);
-      animation: cardReveal 0.7s cubic-bezier(0.16,1,0.3,1) both;
-    }
-
-    .done-icon-ring {
-      width: 90px; height: 90px; margin: 0 auto 2rem;
-      border-radius: 50%; position: relative;
-      background: radial-gradient(circle at 35% 35%, rgba(30,122,69,0.25), rgba(30,122,69,0.08));
-      border: 1.5px solid rgba(30,122,69,0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.25rem;
-      animation: popIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .done-icon-ring::before {
-      content: ''; position: absolute; inset: -8px; border-radius: 50%;
-      border: 1px solid rgba(30,122,69,0.2);
-      animation: ringPulse 2s ease-in-out infinite;
-    }
-    @keyframes ringPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:0.4} }
-    @keyframes popIn { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
-
-    .done-card h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem; font-weight: 700; color: var(--white);
-      margin-bottom: 8px;
-    }
-    .done-card .done-desc { color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 2rem; }
-
-    .chosen-panel {
-      text-align: left;
-      background: rgba(201,148,10,0.06);
-      border: 1px solid var(--border);
-      border-radius: 14px; padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .chosen-panel h4 {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--gold-light); margin-bottom: 12px;
-    }
-    .chosen-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 9px 0; border-bottom: 1px solid rgba(201,148,10,0.1);
-      font-size: 14px; color: var(--off-white); font-weight: 500;
-    }
-    .chosen-item:last-child { border-bottom: none; }
-    .chosen-item-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px rgba(201,148,10,0.5); }
-    .chosen-item-num { font-size: 11px; color: var(--muted); margin-left: auto; }
-
-    .done-note { font-size: 12px; color: var(--muted); }
-
-    /* ── MODAL ───────────────────────────────────────── */
     .modal-overlay {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(7,11,20,0.85);
-      backdrop-filter: blur(8px);
-      display: none; align-items: center; justify-content: center; padding: 1rem;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 999;
+      align-items: center; justify-content: center; padding: 1rem;
     }
-    .modal-overlay.active { display: flex; }
-
-    .modal-box {
-      background: linear-gradient(135deg, rgba(22,36,68,0.95), rgba(12,18,32,0.98));
-      border: 1px solid var(--border-bright);
-      border-radius: 22px; padding: 2.5rem;
-      max-width: 460px; width: 100%;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,148,10,0.08) inset;
-      animation: cardReveal 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: var(--radius);
+      padding: 2rem; max-width: 400px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: popIn 0.2s ease both;
     }
-
-    .modal-box h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem; font-weight: 700; color: var(--white); margin-bottom: 6px;
-    }
-    .modal-box .modal-desc { color: var(--muted); font-size: 13.5px; line-height: 1.65; margin-bottom: 1.5rem; }
-    .modal-box .modal-desc strong { color: var(--gold-pale); }
-
-    .modal-candidates { margin-bottom: 1.75rem; }
-    .modal-cand-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 14px; margin-bottom: 8px;
-      background: rgba(201,148,10,0.07);
-      border: 1px solid rgba(201,148,10,0.15);
-      border-radius: 10px;
-      font-size: 14px; font-weight: 500; color: var(--off-white);
-    }
-    .modal-cand-icon { font-size: 16px; }
-
+    @keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    .modal h3 { font-family: 'Playfair Display', serif; color: var(--red); margin-bottom: 8px; }
+    .modal p { color: var(--muted); font-size: 13.5px; line-height: 1.65; margin-bottom: 1.5rem; }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-ghost {
-      padding: 11px 22px; border: 1.5px solid rgba(201,148,10,0.25);
-      background: transparent; border-radius: 10px;
-      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; color: var(--muted);
-      transition: all 0.2s;
+    .btn-cancel { padding: 9px 18px; border: 1.5px solid var(--border); background: var(--white); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--text); }
+    .btn-confirm-reset {
+      padding: 9px 18px; border: none; background: var(--red); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; color: var(--white); transition: background 0.2s;
     }
-    .btn-ghost:hover { border-color: rgba(201,148,10,0.5); color: var(--off-white); background: rgba(201,148,10,0.06); }
+    .btn-confirm-reset:hover { background: #a93226; }
+    .btn-confirm-reset:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ── ANIMATIONS ──────────────────────────────────── */
-    @keyframes fadeSlideDown {
-      from { opacity: 0; transform: translateY(-16px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #1E6B3C; color: #fff;
+      padding: 10px 24px; border-radius: 100px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      z-index: 9999; opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; } to { opacity: 1; }
-    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: var(--red); }
 
-    /* Stagger cards */
-    .cand-card:nth-child(1) { animation-delay: 0.05s; }
-    .cand-card:nth-child(2) { animation-delay: 0.10s; }
-    .cand-card:nth-child(3) { animation-delay: 0.15s; }
-    .cand-card:nth-child(4) { animation-delay: 0.20s; }
-    .cand-card:nth-child(5) { animation-delay: 0.25s; }
-    .cand-card:nth-child(6) { animation-delay: 0.30s; }
-
-    /* ── RESPONSIVE ──────────────────────────────────── */
-    @media (max-width: 560px) {
-      .candidates-grid { grid-template-columns: 1fr; }
-      .glass-card, .done-card { padding: 2rem 1.5rem; }
-      .vote-topbar, .submit-bar { flex-direction: column; align-items: flex-start; }
-      
+    /* ── VOTING STATUS TOGGLE ── */
+    .status-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
     }
+    .status-panel-left { display: flex; flex-direction: column; gap: 4px; }
+    .status-panel-left .sp-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .status-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 700;
+    }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      transition: background 0.3s;
+    }
+    .status-dot.online { background: #27AE60; animation: pulse 1.5s ease-in-out infinite; }
+    .status-dot.offline { background: #C0392B; }
+    .status-text-online { color: #1E6B3C; }
+    .status-text-offline { color: #C0392B; }
+
+    /* Toggle switch */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .toggle-switch {
+      position: relative; display: inline-block; width: 52px; height: 28px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: #C0392B; border-radius: 28px;
+      transition: background 0.3s;
+    }
+    .toggle-slider::before {
+      content: ""; position: absolute;
+      width: 20px; height: 20px; border-radius: 50%; background: white;
+      left: 4px; top: 4px;
+      transition: transform 0.3s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: #27AE60; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); }
+    .toggle-switch input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+    .status-subtext { font-size: 12px; color: var(--muted); margin-top: 2px; max-width: 340px; }
   </style>
 </head>
 <body>
 
-<!-- Ambient background -->
-<div class="bg-canvas">
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
-  <div class="bg-orb bg-orb-3"></div>
-  <div class="bg-grid"></div>
-</div>
-
-<!-- HEADER -->
 <header>
-  <div class="header-inner">
-    <div class="logo-lockup">
-      <img src="logo.png" alt="KoIKMa" />
-      <div class="logo-text">
-        <div class="org-name">Koperasi Warga Institut<br>Koperasi Malaysia Berhad</div>
-        <div class="org-sub">KoIKMa · Mesyuarat Agung Tahunan</div>
-      </div>
-    </div>
-    <div class="badge-pill"><div class="badge-dot"></div>Sistem Pengundian Elektronik</div>
-    <h1>Pemilihan <em>Anggota Lembaga</em> Koperasi</h1>
-    <p class="subtitle">Pilih 4 daripada 6 calon yang tersenarai · Masuk menggunakan nombor IC penuh</p>
-  </div>
+  <div class="badge">Pentadbir</div>
+  <h1>Keputusan <span>Pengundian</span></h1>
 </header>
 
-<!-- LOADING -->
 <div class="container" id="screen-loading">
-  <div class="loader-ring"></div>
-  <p>Menyambung ke sistem...</p>
+  <div class="spinner"></div>
+  <p>Menyambung ke pangkalan data...</p>
 </div>
 
-<!-- LOGIN -->
-<div class="container" id="screen-login">
-  <div class="glass-card">
-    <div class="card-icon">🗳️</div>
-    <h2>Pengesahan Pengundi</h2>
-    <p class="desc">Masukkan nombor Kad Pengenalan anda <strong style="color:var(--gold-light)">tanpa sempang</strong>. IC baru: <strong style="color:var(--gold-light)">12 digit</strong>. IC lama: masukkan seperti biasa.</p>
-
-    <label class="field-label">Nombor Kad Pengenalan</label>
-    <input type="text" class="ic-input" id="ic-input-field" placeholder="Contoh: 871019105288" maxlength="12" autocomplete="off" inputmode="text" />
-    <p class="hint-text">Contoh: IC 901231-07-5678 → taip <b style="color:var(--gold-light)">871019105288</b> · IC lama: taip seperti <b style="color:var(--gold-light)">A0217464</b></p>
-
-    <div class="msg-error" id="login-error"></div>
-    <div class="msg-info"  id="login-info"></div>
-
-    <button class="btn-primary" id="login-btn" onclick="doLogin()">
-      Teruskan ke Pengundian
-      <span class="btn-arrow">→</span>
-    </button>
-
-    <div class="divider"><div class="divider-line"></div><div class="divider-text">atau</div><div class="divider-line"></div></div>
-    <div class="admin-link"><a href="admin.html">⚙ Halaman Pentadbir</a></div>
+<div class="container" id="screen-auth">
+  <div class="card">
+    <h2>Kawasan Pentadbir</h2>
+    <p>Masukkan kata laluan pentadbir untuk melihat keputusan pengundian.</p>
+    <label for="pw-input">Kata Laluan</label>
+    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()" />
+    <p class="err" id="auth-err" style="display:none">Kata laluan tidak sah.</p>
+    <button class="btn-primary" onclick="doAuth()">Log Masuk</button>
   </div>
 </div>
 
-<!-- CONFIRM IDENTITY -->
-<div class="container" id="screen-confirm-id" style="display:none; max-width:480px; margin:0 auto;">
-  <div class="glass-card">
-    <div class="card-icon">🪪</div>
-    <h2>Sahkan Identiti Anda</h2>
-    <p class="desc">Adakah ini nama anda? Sila sahkan sebelum meneruskan pengundian.</p>
-
-    <div style="background:rgba(201,148,10,0.08); border:1.5px solid rgba(201,148,10,0.35);
-                border-radius:14px; padding:1.5rem; text-align:center; margin-bottom:1.75rem;">
-      <div style="font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
-                  color:var(--gold-light); margin-bottom:8px;">Nama Anggota</div>
-      <div id="confirm-name-display"
-           style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:700;
-                  color:var(--white); line-height:1.3;"></div>
-    </div>
-
-    <input type="hidden" id="ic6-store" />
-    <input type="hidden" id="name-store" />
-
-    <div class="msg-error" id="confirm-id-error"></div>
-
-    <button class="btn-primary" id="confirm-id-btn" onclick="confirmIdentity()">
-      Ya, Ini Saya — Teruskan
-      <span class="btn-arrow">→</span>
-    </button>
-
-    <button onclick="denyIdentity()"
-      style="display:block; width:100%; margin-top:12px; padding:12px;
-             background:transparent; border:1.5px solid rgba(201,148,10,0.2);
-             border-radius:12px; font-family:Outfit,sans-serif; font-size:14px;
-             color:var(--muted); cursor:pointer; transition:all 0.2s;"
-      onmouseover="this.style.borderColor='rgba(201,148,10,0.5)';this.style.color='var(--off-white)'"
-      onmouseout="this.style.borderColor='rgba(201,148,10,0.2)';this.style.color='var(--muted)'">
-      ← Bukan Saya, Cuba Semula
-    </button>
-  </div>
-</div>
-
-<!-- NAME PICKER MODAL (for duplicate IC6) -->
-<div class="modal-overlay" id="name-pick-overlay">
-  <div class="modal-box">
-    <h3>Pilih Nama Anda</h3>
-    <p class="modal-desc">Terdapat lebih daripada seorang anggota dengan 6 digit IC yang sama. Sila pilih nama anda.</p>
-    <div id="name-pick-list"></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeNamePicker()">← Kembali</button>
-    </div>
-  </div>
-</div>
-
-<!-- VOTING -->
-<div class="container" id="screen-voting">
-  <div class="vote-topbar">
-    <div class="voter-info">
-      <div class="voter-label">Pengundi Disahkan</div>
-      <div class="voter-id" id="voter-display">—</div>
-    </div>
-    <div class="pick-counter">
-      <div class="pick-dots" id="pick-dots"></div>
-      <div class="pick-label">Dipilih: <strong id="count-display">0</strong> / 4</div>
-    </div>
+<div class="container" id="screen-results">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:1.5rem;">
+    <div class="live-badge"><div class="live-dot"></div> Keputusan Langsung (Auto-refresh)</div>
+    <span id="last-updated" style="font-size:12px; color:var(--muted);"></span>
   </div>
 
-  <p class="section-title">Senarai Calon — <span>Pilih tepat 4</span></p>
-  <div class="candidates-grid" id="candidates-grid"></div>
-
-  <div class="submit-bar">
-    <div class="submit-info">
-      <p>Anda mesti memilih tepat <strong>4 calon</strong> sebelum menghantar undi.</p>
-      <div class="progress-track">
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-        <div class="progress-text" id="progress-text">0 / 4</div>
+  <!-- ── VOTING STATUS PANEL ── -->
+  <div class="status-panel">
+    <div class="status-panel-left">
+      <span class="sp-label">Status Pengundian</span>
+      <div class="status-indicator" id="status-indicator">
+        <div class="status-dot offline" id="status-dot"></div>
+        <span id="status-text" class="status-text-offline">Memuatkan...</span>
       </div>
+      <span class="status-subtext" id="status-subtext">Semak sambungan...</span>
     </div>
-    <button class="btn-submit" id="submit-btn" onclick="openConfirm()" disabled>Hantar Undi →</button>
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="toggle-label-off" style="color:var(--red);">Ditutup</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="voting-toggle" onchange="onToggleChange(this)" disabled />
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="toggle-label" id="toggle-label-on" style="color:#1E6B3C;">Dibuka</span>
+    </div>
   </div>
+
+  <div class="btn-actions">
+    <button class="btn-outline" onclick="loadResults()">🔄 Muat Semula Manual</button>
+    <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+    <button class="btn-danger" id="btn-reset" onclick="openResetModal()">🗑 Set Semula Semua Undian</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="num" id="stat-voters">0</div><div class="lbl">Jumlah Pengundi</div></div>
+    <div class="stat-card"><div class="num" id="stat-votes">0</div><div class="lbl">Jumlah Undi Dihantar</div></div>
+  </div>
+
+  <div class="results-table">
+    <h3>Keputusan Pengundian</h3>
+    <table>
+      <thead><tr><th>Kedudukan</th><th>Nama Calon</th><th>Undi</th><th style="min-width:160px">Peratusan</th></tr></thead>
+      <tbody id="results-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="voted-section">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+      <h4 style="margin:0;">Rekod Pengundi — Siapa Memilih Siapa (<span id="voted-count">0</span>)</h4>
+      <input type="text" id="search-voter" placeholder="🔍  Cari nama atau IC..." oninput="filterVoters()"
+        style="padding:7px 12px; border:1.5px solid rgba(184,134,11,0.25); border-radius:8px;
+               font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream);
+               color:var(--text); outline:none; width:220px;" />
+    </div>
+    <div id="voter-table-wrap" style="overflow-x:auto;">
+      <table id="voter-table" style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead>
+          <tr style="background:var(--cream);">
+            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(13,27,62,0.08); white-space:nowrap;">#</th>
+            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(13,27,62,0.08); white-space:nowrap;">Nama & IC</th>
+            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(13,27,62,0.08);">Calon Dipilih</th>
+            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(13,27,62,0.08); white-space:nowrap;">Masa Undi</th>
+            <th style="padding:9px 12px; text-align:center; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(13,27,62,0.08); white-space:nowrap;">Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="voter-tbody"></tbody>
+      </table>
+      <div id="voter-empty" style="display:none; text-align:center; padding:2rem; color:var(--muted); font-size:13px;">Tiada pengundi lagi.</div>
+    </div>
+  </div>
+
+  <div class="back-link"><a href="index.html">← Kembali ke Halaman Pengundian</a></div>
 </div>
 
-<!-- DONE -->
-<div class="container" id="screen-done">
-  <div class="done-card">
-    <div class="done-icon-ring">✅</div>
-    <h2>Undi Berjaya Dihantar</h2>
-    <p class="done-desc">Terima kasih kerana menyertai proses demokrasi koperasi. Pilihan anda telah direkodkan dengan selamat.</p>
-    <div class="chosen-panel">
-      <h4>Calon yang anda pilih</h4>
-      <div id="done-list"></div>
-    </div>
-    <p class="done-note">Setiap pengundi hanya dibenarkan mengundi sekali. Rekod undi adalah muktamad.</p>
-  </div>
-</div>
-
-<!-- CONFIRM MODAL -->
-<div class="modal-overlay" id="confirm-modal">
-  <div class="modal-box">
-    <h3>Sahkan Undi Anda</h3>
-    <p class="modal-desc">Anda akan mengundi calon-calon berikut. Tindakan ini <strong>tidak boleh dibatalkan</strong> setelah dihantar.</p>
-    <div class="modal-candidates" id="confirm-list"></div>
+<!-- RESET CONFIRMATION MODAL -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h3>⚠️ Set Semula Semua Undian?</h3>
+    <p>Tindakan ini akan memadam <strong>semua rekod pengundi dan keputusan undi</strong> secara kekal dari Firestore. Tindakan ini <strong>tidak boleh dibatalkan</strong>.</p>
     <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeConfirm()">← Kembali</button>
-      <button class="btn-submit" id="confirm-submit-btn" onclick="submitVote()">Ya, Hantar Undi</button>
+      <button class="btn-cancel" id="btn-modal-cancel" onclick="closeResetModal()">Batal</button>
+      <button class="btn-confirm-reset" id="btn-confirm-reset" onclick="executeReset()">Ya, Set Semula</button>
     </div>
   </div>
 </div>
 
-<!-- Firebase -->
+<div class="toast" id="toast"></div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore, doc, getDoc, getDocs,
+    collection, writeBatch, setDoc, onSnapshot, updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ══════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════
   // 🔧 FIREBASE CONFIG
-  // ══════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════
   const firebaseConfig = {
     apiKey:            "AIzaSyD1SXTOq1S5vcsto5oGQHo7x2S9xPwF-p0",
     authDomain:        "koikma.firebaseapp.com",
@@ -725,293 +319,406 @@
     messagingSenderId: "47302882263",
     appId:             "1:47302882263:web:02d5e7ad61354a37f39192"
   };
+  const ADMIN_PASSWORD = "admin123"; // 🔧 Tukar di sini
+  // ═══════════════════════════════════════════════
 
-  // ══════════════════════════════════════════════════════
-  // 🔧 SENARAI CALON
-  // ══════════════════════════════════════════════════════
-  window.CANDIDATES = [
-    { id: "c1", name: "Norbiha Binti Kasmuri",  position: "IKMa",        initials: "1" },
-    { id: "c2", name: "Julizah Binti Sabstu",    position: "IKMa",            initials: "2" },
-    { id: "c3", name: "Muhamad Shafiq Bin Mohd Noor",     position: "IKMa",     initials: "3" },
-    { id: "c4", name: "Salwana Binti Ali",   position: "IKMa",        initials: "4" },
-    { id: "c5", name: "Calon 5",   position: "IKMa",  initials: "5" },
-    { id: "c6", name: "Calon 6",           position: "IKMa",      initials: "6" },
-    { id: "c7", name: "Calon 7",          position: "IKMa",                       initials: "7" },
+  const CANDIDATES = [
+    { id: "c1", name: "Norbiha Binti Kasmuri" },
+    { id: "c2", name: "Julizah Binti Sabstu" },
+    { id: "c3", name: "Muhamad Shafiq Bin Mohd Noor" },
+    { id: "c4", name: "Salwana Binti Ali" },
+    { id: "c5", name: "Calon 5" },
+    { id: "c6", name: "Calon 6" },
+    { id: "c7", name: "Calon 7" },
   ];
-  // ══════════════════════════════════════════════════════
 
-  const MEMBER_LOOKUP = {"871019105288":["ADILAH BT AHMAD GHAZALI"],"443876":["HJH HASMAH BT ABD HAMID."],"580603015003":["ZAINUL ABIDIN B. A. KADIR"],"581016095058":["HALIMAH RABIAH BT HJ ASMUNI"],"561111015767":["ABU BAKAR BIN SEDIK"],"570926016378":["RAJA RAHIMAH BT RAHMAT"],"630517025910":["RABIAH BT ZAKARIA"],"590802025289":["ARIFIN BIN PUTEH"],"640201045500":["ZAITON BT. MUSTAPA"],"330822025197":["DOLLAH BIN MAT"],"620820015695":["HARIS BIN ABDOL"],"501103105856":["INDAR KAUR DO DAN SINGH"],"611205055308":["RUZILAH BT ABD MALEK"],"5371737":["SUSHILA DEVI AP S. RAJARATNAM"],"960302105720":["AINUR AMIRA BT MUSTAFA"],"630712015099":["ROSSLY B. MALIK"],"570820035095":["RAZALI B. YUSOFF"],"660504025388":["KAMARIAH BT AWANG"],"601025055459":["MOHD IDRIS ABD MALEK"],"651023045228":["NORSIAH BT YAMAN"],"5587756":["HASNAH BT MOHD NOR"],"4947330":["MOHAMMAD HUSSAIN HABIL"],"600301085917":["ABD RAHMAN BIN HASSAN NORDIN"],"600214085900":["HAZIMAH BT RAMLI"],"530415086079":["MOHAMAD HASHIM B ABU"],"520213055320":["ASMAH BT SAMSUDIN"],"650103016473":["RAMLI B. MOHD NOR"],"610422045267":["ZAKARIA BIN HASSAN"],"540612015236":["HAYATI MD SALLEH"],"560107015612":["MORNI BINTI MD SALLEH"],"610826086009":["BAHARUDDIN BIN TALIB"],"610717035752":["ROKIAH BT OMAR"],"631017055448":["FADZILAH BT AHMAD"],"560107095114":["NORWATIM HJ ABD LATIFF"],"540816035255":["ZAKARIA BIN MAT YUSOF"],"640210086152":["KHADIJAH BT ABDULLAH"],"590319025465":["HASSAN BIN HJ AHMAD"],"550319055203":["HARIS BIN MOHD ALWI"],"621007085089":["ABDUL HALIM BIN JAPAR"],"650611105923":["ANUAR BIN SHAMSUDDIN"],"451201085825":["MOHD KHAIRI BIN MOHD DAUD"],"1064743":["RAHMAH BT TALIB"],"631017015534":["RAHIMAH BT ABD SAMAD"],"580512025345":["ALLIAS BIN ISHAK"],"580801105018":["AISHAH BT ARIFFIN"],"A0217464":["AMIRUDDIN BIN BAGAD"],"540406105425":["IDRIS BIN ISMAIL"],"580408015817":["MOHD SAFAAI BIN SAID"],"531130715032":["RAJA MAIMON BT RAJA YUSOF"],"580510086080":["MARIAM BT M.W MERICAN"],"480121105438":["ARMI BIN HJ ZAINUDIN"],"610704085635":["NURIZAH BT NOORDIN"],"630125107618":["HASNAH LAILI MUTASAR"],"7848986":["NARAIN SINGH"],"550903065128":["SALBIAH BINTI HUSSAIN"],"4460859":["MOHD HILMEY B MOHD TAIB"],"521128055101":["PERIASAMY AL PERUMAL"],"580329105232":["PRAMILA DEVI AP AUDIYAR"],"570131075120":["JAMILAH BT DIN"],"A0003942":["JASMIN BT JAIS"],"590612065028":["ZAIMI ROSMIDA BTE MD JAMIN"],"7059453":["MAZIBAH MOHD ZIN"],"012345678910":["SABARIAH BT MD ZAKI"],"510105828":["HARON BIN KHAMIS"],"6185326":["SURIANI B. JASMAN"],"5701849":["JASMANI BT MOHD YUNUS"],"651113015014":["HAYATI BT NGABENI"],"5608172":["MOHD SOFIAN BIN HJ ABD JALIL"],"680910065500":["NAJMAH BINTI NAWAWI"],"300136":["MAZNI BT M.A ISMAIL"],"6855702":["ISNIN BIN ABU"],"5231713":["SITI ROHANI BT UDIN"],"671208045249":["IBRAHIM BIN YAAKUB"],"R/F70088":["ZAFRI MD YUSOF"],"650801085206":["ASIAH BT ABDUL RAHMAN"],"560831015330":["SULAIHAH BT ABD RASHID"],"680703085867":["MOHD KHIR BIN SALLEH"],"620806015189":["RAMLAN BIN KAMSIN"],"561228085398":["KAMARIAH BT ABD RAHMAN"],"6965142":["JAMILAH BT HAMIDAN"],"640608085416":["NOR MASURI BT MOHD SARIP"],"620610015996":["NOR KHAIRIAH BT MOHD TAP@HARUN"],"650917045310":["MERIAM BINTI HARUN"],"690311055158":["SA'ADIAH BT AHMAD"],"730401085880":["ROSMAZNI BT ABD MANAN"],"680606105418":["NOR HAMIDAH BT ABDUL SAMAT"],"2702991":["JULIAH BT JUMIN"],"8132410":["VIJENDRAN AL MUTHUTAMBHY"],"640529015196":["SITI FATIMAH BINTI SAJADI"],"A0381268":["SABARIAH BT A.BAKAR"],"630601025163":["RAZIF BIN ABDUL HALIM"],"630811107204":["NORA BT ROKIMAN"],"710601035716":["ZALEHA BT YUSOF"],"750725035562":["NOR AYUBI ISMAIL"],"680310065048":["ROSIDAH BT RASHID"],"A3455481":["ISHAN BIN ISSMAIL"],"620821045335":["MOKHTARUDDIN BIN NORDIN"],"750212085150":["RUBIAH BT SABRAN"],"740629105584":["AFIZA BT ABDUL KARIM"],"690109086006":["PARIZAI BT ALI"],"760730105253":["NOR AZLAN BIN HASBULLLAH"],"680804055018":["ROZIAH BT MOHAMED"],"760227085902":["NORAESYAH BT SAARI"],"800712105122":["ROHAYA BT IBRAHIM"],"780607105600":["SITI NOREHAN BT SHAHARI"],"780221016936":["ROHALINDA BT AHAD"],"740106055258":["ASNIDA BT ADAM"],"750717035191":["MOHD ZAIB BIN MAT YUNUS"],"670811016202":["MAIMON BT ABDULLAH"],"760704016564":["AZLIFAH BT ABAS"],"810116145063":["MOHAMAD HAIRI BIN ROSNI"],"780128146018":["SHARINA BT ABDULLAH"],"720806135226":["NORSHAMILAWATI BT JAMEL"],"760626125385":["MOHD RAZALIE BIN RAFFAE"],"780814015341":["ZULKIFLEE BIN ASPAN"],"770607036546":["NOR ASLAMIAH ALI"],"620501086613":["ZAMANHURI BIN YAHAYA"],"760727145318":["NOOR ZEETA BT MOHD RAMLI"],"760730085061":["MOHAMAD RASYDI BIN ABD RASHID"],"601230045153":["MAZNAN MD SANI"],"780720025178":["NOR AZLINA BT KASSIM"],"830106086360":["NORLIZAWATI BT MOHAMAD ZAMZAMIL"],"751025035045":["ABDUL HALIM BIN ABDULLAH"],"720713105167":["SHAHRUL AFENDI AB JABAR"],"701016015971":["MD NASREIN BIN ISLAH"],"610920085907":["AZMAN BIN GHAZALI"],"820221145734":["SAKINAH BT IDRIS"],"801006145623":["SHAIFUL AZRI ZAKARIAH"],"791013055048":["NORAZIZAH BT OMAR"],"831119145029":["MUHAMMAD KHIDZIR BIN AHMAD NAZRI"],"790220145068":["ZARINA BT AB. AZAIS"],"830128145165":["MOHD JOHARI B KHAIRIL ANUAR"],"820226145215":["MOHD HASRULNIZAN KUSAINI"],"790929135633":["YUSMAN BIN YAKOB"],"780426145419":["HAIRULNIZAM MOHD ROSLI"],"731229145339":["AZLAN BIN LAILI"],"831021015533":["MOHD KHAIRIL BIN ABD HADI"],"770117125685":["DATU ZAHIRUDDIN DATU TAMBUYONG"],"780707086419":["MAZLAN BIN ALI"],"741028135555":["AHMAD FAIZAL BIN AHMAD SHAARANI"],"810624105877":["FAIZ BIN AHMAD YATIM"],"860401566153":["JOHARI BIN JALADIN"],"780419055319":["HASRIN ABU HASSAN"],"750326105017":["MOHD FAISAL BIN SHARIFF"],"790914065679":["MOHD SHAHRON ANUAR BIN SAID"],"690519125477":["YUSRI BIN TARIP"],"750110135663":["HAMIZAH BT MOHD NADZIR"],"760622135595":["SITI MAIMUNAH JERNI"],"720608036147":["MOHD SHAMSUDDIN BIN MOHD NOR"],"771231136067":["MUSTAKIM BIN OMAR"],"790921125078":["YUSLINAH BT PUNGUT"],"800413085504":["SHARIFAH NORASHIKIN BINTI SYED MOHD IDRIS"],"781216045086":["NORAMEZAH AMRAN"],"810103145830":["NUR FAEZA BT YAHYA"],"720722095028":["NASIBAH BT AHMAD"],"750709115300":["NORHAYATI BT ABDUL RAHMAN"],"700101108107":["MOHD RASID ABDUL HAIR"],"751229145652":["ARFIZAWATI BT ABD HADI"],"770715145846":["NOR AZILA BT MD TAUHID"],"791022016382":["NORBIHA KOSMURI@KASMURI"],"750603025649":["MAZLAN MOHAMAD JASIN"],"771118115600":["NORHAZLIN BT ABDULLAH @ ABF RAZAK"],"741212015326":["HAMIDAH BT MOHD JOS"],"870521145678":["NURUL NAJWA BINTI MUSTAFA"],"750130045307":["ASHA'ARI BIN ARSYAD"],"870419565748":["NOOR FARIZA BT ZAFRI"],"690526096234":["ASIAH BT KASSIM"],"730514035433":["HASYIM BIN YUSOF"],"710923076078":["RAHMATHBEE ZARINATUN BINTI MOHD ABDUL KADER"],"800416065015":["ASROLNIZAM BIN MOHAMED SULONG"],"830728065556":["NORULHUDA BT BAHARUDIN"],"750727145044":["HASLINDA BT SUJAK"],"780925125164":["RAFEDAH BT JUHAN"],"781021715000":["SALWANA BT ALI"],"761228035549":["MOHD NUSI B. ABD RAHMAN"],"820610065244":["NORLIZAWATI BT DAUD"],"890917145074":["IZNI HUSNA BT IDRIS"],"711012016677":["HUSAINI BIN NASERAN"],"860806436023":["HASROL NAZRY BIN HASHIM"],"820411105223":["MOHD FAIRUZ BIN TULUS"],"890425145764":["DINAH NABILAH BT MOKHTARUDDIN"],"691214125307":["JAIBIT BIN JAUDIN"],"750517125379":["MOHAMMAD PISAH ALI"],"730904106321":["SHAMSUL KHAIRI ABU HASSAN"],"510405115165":["KAMALUDIN BIN OTHMAN"],"770906095036":["KHADIJAH AHMAD"],"740222135247":["MOHD HASWARDI B MORSHIDI"],"720101107356":["ZURITA BT MOHD SALLEH"],"810501065019":["JU SAMSUDDIN BIN SAFIAN"],"800801085880":["YUSNITA OTHMAN"],"830416105678":["SYAZWANI SHAMSUDDIN"],"790816146192":["AYU DIANA BT AWANG"],"890909145891":["MUHAMMAD FAIZ BIN ZAKARIA"],"900609126601":["MOHD AMMAR MOKHTARUDIN"],"770823045834":["JULIANA MD YUSOP"],"870408145406":["NORHIDAYAH BAHARUDDIN"],"890804146126":["NOR MAHERAN BAHARUDDIN"],"900131145976":["NUR AIFFA BT ABD RAZAK"],"880112145959":["MUHAMMAD ARIFF ABD RAZAK"],"570826035571":["ARIFFIN BIN MAMAT"],"890828026102":["NURUL IZZAH BINTI MOHD IDRIS"],"841119126249":["MOHAMAD RAFI BIN HUSSIN"],"900205095163":["AZIZUL BIN AZIZ"],"910526145339":["MUHAMMAD NAFIS BIN MAZNAN"],"811216035608":["NOORLINDA BT RAHIMI"],"800715016504":["NORSYEIRAWANI BT SHARI"],"850914045389":["NORLE BIN ABDUL RAHMAN"],"710108035640":["NOR AZMAWATI BT MOHD SHAFII"],"910803145717":["KHAIRUL ATMAM BIN MUSTAPA"],"881113045524":["NUR ATI'QAH BT HAMZAH"],"830625145959":["FAIZUL AMILIN BIN HAMZAH"],"780417065433":["MOHD IRWAN B ABDUL MALIK"],"841001145022":["NORHAYATI BINTI MOHD HANAPI"],"850912055014":["NORLAILA BT MOHD HANAPI"],"790222085812":["HANANI BT ABDUL RASID"],"860906085128":["NOR ARMA BT ABU TALIB"],"800602105455":["AZRUL AZLAN BIN YAHYA"],"850304145606":["NURUL IZZA BINTI ZAMURI"],"810929025536":["NORAFIDAH BT ISMAIL @ YAACOB"],"861031386204":["NOR ALYANI BT ABD RAZAK"],"850619035735":["TZ MOHD FITREE BIN ZAKARIA"],"880715085780":["RINA FAIRUZ BT JAHYA"],"880703055170":["HAJAR AZWIN BT HJ MOHAMMAD ASHI"],"840810145327":["MOHAMMED HAYQAL BIN MAHMAD NOR"],"870619015206":["JULIZAH BT SABSTU"],"821207135227":["FRANK ME-OL BIN ABDULLAH"],"841005146575":["MUHAMMAD ZULFADLI BIN BACHOK"],"620106086031":["PROF.MADYA DR.ABDUL RAHMAN B.ABDUL RAZAK SHAIK"],"770508105673":["SUFIAN BIN SAARI@SHARI"],"661027086069":["WAN IDRIS B. ADNAN"],"890930085985":["WAN ZULHAFIZ LOKMAN BIN WAN IDRIS"],"920719145406":["WAN NORFATHIN AMIRA BT WAN IDRIS"],"960816145498":["NUR FARIZA BT ZAKARIA"],"890604086050":["NOR ZAIDAH BT MUHAMMAD"],"910908105703":["MUHAMMAD AZAM BIN NORAZMAN"],"790619035231":["MOHD ZULKIFLI BIN SEDIK"],"790314145261":["MOHD NADZIR BIN RASLI"],"870415086176":["NUR IZZATI BT HASHIM"],"810514146504":["NORHANA BT ABDUL TALIB"],"871011145154":["NURUL ELIANA BT MOHD FADHIL"],"581122085195":["SABRI BIN ALANG MOHAMAD"],"851010146579":["MUHAMMAD ASWAD BIN YAACOF"],"870904565776":["INTAN NUR AZREEN MOHAMAD RADZI"],"870127435271":["SHAIFUL AZLY BIN KAMSANI"],"900503105124":["NUR ZULAIKHA BT BORHAN"],"891210145868":["SITI HALIJAH BT ARIS"],"930707145299":["MUHAMMAD FARHAN BIN ZAKARIA"],"920816145248":["NUR NAJIHAH BT MAZNAN (NAJMAH)"],"941204145231":["MUHAMMAD NAZIRUL NA'IM BIN MAZNAN"],"871117355686":["NAZIRAH BT BAHARUDIN"],"880122115438":["NOR FADHILAH BT MOHD"],"881223085236":["NORAINI BINTI ASIN"],"870824055602":["NORFAZILAH BT ABDUL GHANI"],"760111125538":["NURUL AIN BT ABDULLAH"],"811023115180":["NURUL AINI BT MUHAMMAD"],"820203145554":["NURUL SYIEFA BINTI MOHD RAMLI"],"860220025067":["MOHD HAMZAH KASIM"],"841020105106":["SITI HAJAR BT SAAEY"],"880925566195":["MUHAMMAD AFNAN BIN HASIM"],"920830086686":["NORHASLIANA BT SAKHALID"],"880720565084":["NOOR ASHIKIN BINTI JAMALUDIN"],"971122145032":["NUR ATHIRAH BT MAZNAN"],"810102015313":["HAFIZAL BIN ABU BAKAR"],"920417145347":["AHMAD FITREE BIN ZAFRI"],"830901145067":["AHMAD FAKHIRIN BIN ZAFRI"],"840926145169":["AHMAD FARIZ BIN ZAFRI"],"861101565380":["SITI FATIHAH NUR BINTI ISMAIL"],"851007145065":["MOHD AZMAN BIN MOHD RUSLI"],"831106145361":["MUHAMMAD HAIKAL BIN RAZALI"],"920116036091":["AHMAD ASYRAF BIN NIK AB KADIR"],"791025065200":["NORHAZILINA BT. ABDUL HALIM"],"941117086157":["MUHAMAD NUR FAHMI BIN MOHD HASSAN"],"870316095026":["SHAREPAH NUR AZIRAH BT. SHAREH ABD RAHMAN"],"910630055237":["MUHAMAD SHAFIQ BIN MOHD NOOR"],"860226565638":["WAN NUR 'AIN BT. WAN ABD. RAHIM"],"900320016436":["NUR SYAMIMI BT. OTHMAN"],"840629085120":["NOOR SHAFEEZA BT ZAINUDDIN"],"891002085872":["NASUHA BINTI NEZUAKIFLI"],"870222085441":["INTIRAN AL HARIKRISHNAN"],"880204065067":["MOHD AZANI BIN MAT LEH"],"831221016004":["ADILA BT HASHIM"],"640526086175":["KAMARUDDIN BIN KASSIM"],"900327145134":["NOOR AZRIN BINTI KASIM"],"871004295664":["NUR SHUHADA BT MOHD ALI"],"800911105184":["NORANITA BT MOHD NOR"],"850919065100":["MARYAM HAMIDAH BT MOHD GHAZI"],"850311015076":["AFIZAH BT ABDUL JALAL"],"880807115510":["NOR AZILA WAHIDA BT AWI"],"890728235070":["SITI NURAINI BINTI ABU BAKAR"],"890929036158":["NUR HAFIEZA BT HASHIM"],"791122105470":["FARAHAINI BT MOHD HANIF"],"880624065928":["MALESA SHELA BT TA'YIB"],"890408105066":["NORFAEZAH BT MAHMOOD"],"891026055678":["SITI HAFIZAH BINTI RAMLI"],"810625015240":["ZUREE ZURAINEE BINTI ABD RAHIM"],"970830025715":["MUHAMMAD AKMAL ZULHELMI BIN ISMAIL"],"790114015067":["FAREZ BIN MAHMOOD"],"860612236031":["CHE SOFIANIZAM BIN CHE SOH"],"950627025711":["MUHAMMAD IMRAN BIN ABDUL AZIZ"],"870201085688":["NUUR FADZILLAH BT ZULLKEPLI"],"970403095268":["NUR AIN AZMIRA BINTI ABU SEMAN"],"770504105537":["MOHAMMED SALLEH BIN MOHD FADZIL"],"910306115306":["NOR SUHAILI BINTI YUSUF"],"870426295176":["NUR ANIZAH BINTI AZIZ"],"000914100455":["FARUQAL FARISI BIN JUHARI"],"960603065080":["NURSUHAIDA BINTI SAHROL"],"900624065472":["NOR SYAHIDAH BINTI AHAMAD"],"990406107007":["MUHAMMAD NUR IKMAL BIN ABDUL KHALIQ"],"910705085079":["MUHAMMAD ABDUL HALLIM BIN ZABIDI"],"011124080860":["NURUL FASIHAH IZZATI BINTI NOR AZARUDDIN"],"000513100446":["SITI ZULAIKHA BINTI ADNAN"],"730508045379":["SAIFULNIZAM BIN ABU BAKAR"],"890807146287":["ABDUH DJABBAR JUSNI@TIJAS"],"960427036087":["MOHAMMAD ASYRAF BIN UBAIDILLAH"],"940712105872":["NUR AMALINA BINTI SIDEK"]};
+  let db;
+  let isTogglingStatus = false;
 
-  const MAX_PICKS = 4;
-  let db, currentAnggota, currentMemberName;
-  let selected = new Set();
+  function show(id) { document.getElementById(id).style.display = "block"; }
+  function hide(id) { document.getElementById(id).style.display = "none"; }
 
-  // Init Firebase
+  function showToast(msg, isError = false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show" + (isError ? " error" : "");
+    setTimeout(() => { t.className = "toast"; }, 3000);
+  }
+
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    show("screen-login");
+    show("screen-auth");
     hide("screen-loading");
   } catch(e) {
     document.querySelector("#screen-loading p").textContent = "Ralat: Gagal menyambung ke sistem.";
     console.error(e);
   }
 
-  function show(id) { document.getElementById(id).style.display = "block"; }
-  function hide(id) { document.getElementById(id).style.display = "none"; }
-
-  // ── IC INPUT ───────────────────────────────────────────
-  const icInputField = document.getElementById("ic-input-field");
-
-  icInputField.addEventListener("input", e => {
-    e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-  });
-
-  icInputField.addEventListener("keydown", e => {
-    if (e.key === "Enter") window.doLogin();
-  });
-
-  function getAnggotaValue() {
-    return icInputField.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-  }
-
-  // ── LOGIN ──────────────────────────────────────────────
-  window.doLogin = async function() {
-    const ic6 = getAnggotaValue();
-    const err = document.getElementById("login-error");
-    const btn = document.getElementById("login-btn");
-    err.style.display = "none";
-
-    const ic6Upper = ic6.toUpperCase();
-    if (ic6.length < 6 || ic6.length > 12) {
-      err.textContent = "Nombor IC tidak sah. Sila masukkan antara 6 hingga 12 digit.";
-      err.style.display = "block"; return;
-    }
-
-    // Look up member in local list
-    const matches = MEMBER_LOOKUP[ic6Upper];
-    if (!matches || matches.length === 0) {
-      err.textContent = "6 digit IC ini tidak dijumpai dalam senarai anggota. Sila semak dan cuba semula.";
-      err.style.display = "block"; return;
-    }
-
-    // If duplicate IC6 — show name picker
-    if (matches.length > 1) {
-      showNamePicker(ic6Upper, matches);
-      return;
-    }
-
-    // Single match — proceed to confirm
-    proceedWithName(ic6Upper, matches[0]);
-  };
-
-  function showNamePicker(ic6, names) {
-    const overlay = document.getElementById("name-pick-overlay");
-    const list = document.getElementById("name-pick-list");
-    list.innerHTML = names.map((n, i) => `
-      <button onclick="selectPickedName('${ic6}', ${i})"
-        style="display:block; width:100%; padding:14px 18px; margin-bottom:10px;
-               background:rgba(201,148,10,0.07); border:1.5px solid rgba(201,148,10,0.2);
-               border-radius:12px; font-family:Outfit,sans-serif; font-size:15px; font-weight:600;
-               color:var(--off-white); cursor:pointer; text-align:left;
-               transition:all 0.2s;"
-        onmouseover="this.style.background='rgba(201,148,10,0.18)';this.style.borderColor='var(--gold)'"
-        onmouseout="this.style.background='rgba(201,148,10,0.07)';this.style.borderColor='rgba(201,148,10,0.2)'">
-        👤 ${n}
-      </button>`).join("");
-    overlay.classList.add("active");
-    window._pickerIC6 = ic6;
-    window._pickerNames = names;
-  }
-
-  window.selectPickedName = async function(ic6, idx) {
-    document.getElementById("name-pick-overlay").classList.remove("active");
-    proceedWithName(ic6, window._pickerNames[idx]);
-  };
-
-  window.closeNamePicker = function() {
-    document.getElementById("name-pick-overlay").classList.remove("active");
-  };
-
-  async function proceedWithName(ic6, memberName) {
-    // Show confirm identity screen
-    document.getElementById("confirm-name-display").textContent = memberName;
-    document.getElementById("ic6-store").value = ic6;
-    document.getElementById("name-store").value = memberName;
-    document.getElementById("screen-login").style.display = "none";
-    document.getElementById("screen-confirm-id").style.display = "block";
-  }
-
-  window.confirmIdentity = async function() {
-    const ic6 = document.getElementById("ic6-store").value;
-    const memberName = document.getElementById("name-store").value;
-    const err = document.getElementById("confirm-id-error");
-    const btn = document.getElementById("confirm-id-btn");
-    err.style.display = "none";
-    btn.disabled = true;
-    btn.innerHTML = '<div class="loader-ring" style="width:18px;height:18px;margin:0;border-width:2px"></div> Menyemak...';
-
-    try {
-      const voterRef = doc(db, "voters", ic6 + "_" + memberName.replace(/\s+/g,"_").slice(0,20));
-      const snap = await getDoc(voterRef);
-      if (snap.exists() && snap.data().voted) {
-        err.textContent = "Anda telah mengundi sebelum ini. Setiap anggota hanya dibenarkan mengundi sekali.";
-        err.style.display = "block";
-        btn.disabled = false;
-        btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
-        return;
-      }
-      currentAnggota = ic6 + "_" + memberName.replace(/[\s\/\.#\$\[\]]/g,"_").slice(0,20);
-      currentMemberName = memberName;
-      document.getElementById("voter-display").textContent = memberName;
-      document.getElementById("screen-confirm-id").style.display = "none";
-      renderCandidates();
-      show("screen-voting");
-    } catch(e) {
-      err.textContent = "Ralat sambungan. Sila cuba semula.";
-      err.style.display = "block";
-      btn.disabled = false;
-      btn.innerHTML = 'Ya, Ini Saya — Teruskan →';
-      console.error(e);
-    }
-  };
-
-  window.denyIdentity = function() {
-    document.getElementById("screen-confirm-id").style.display = "none";
-    document.getElementById("screen-login").style.display = "block";
-    // Clear input
-    document.getElementById("ic-input-field").value = "";
-    document.getElementById("ic-input-field").focus();
-  };
-
-  // ── BUILD PICK DOTS ────────────────────────────────────
-  function buildDots() {
-    const c = document.getElementById("pick-dots");
-    c.innerHTML = "";
-    for (let i = 0; i < MAX_PICKS; i++) {
-      const d = document.createElement("div");
-      d.className = "pick-dot"; d.id = "pdot-" + i;
-      c.appendChild(d);
-    }
-  }
-
-  // ── RENDER CANDIDATES ──────────────────────────────────
-  function renderCandidates() {
-    buildDots();
-    document.getElementById("candidates-grid").innerHTML = window.CANDIDATES.map((c, i) => `
-      <div class="cand-card" id="card-${c.id}" onclick="toggleCandidate('${c.id}')">
-        <div class="cand-avatar">${c.initials}</div>
-        <div class="cand-info">
-          <div class="cand-name">${c.name}</div>
-          <div class="cand-pos">${c.position}</div>
-        </div>
-        <span class="cand-number">Calon ${i+1}</span>
-        <div class="cand-check">✓</div>
-      </div>
-    `).join("");
-  }
-
-  window.toggleCandidate = function(id) {
-    const card = document.getElementById("card-" + id);
-    if (card.classList.contains("disabled")) return;
-    if (selected.has(id)) {
-      selected.delete(id); card.classList.remove("selected");
+  // ── AUTH ────────────────────────────────────────
+  window.doAuth = function() {
+    const pw = document.getElementById("pw-input").value;
+    if (pw === ADMIN_PASSWORD) {
+      hide("screen-auth");
+      show("screen-results");
+      startLiveResults();
+      startVotingStatusListener();
     } else {
-      if (selected.size >= MAX_PICKS) return;
-      selected.add(id); card.classList.add("selected");
+      document.getElementById("auth-err").style.display = "block";
     }
-    updateUI();
   };
 
-  function updateUI() {
-    const count = selected.size;
-    document.getElementById("count-display").textContent = count;
-    document.getElementById("submit-btn").disabled = count !== MAX_PICKS;
-    document.getElementById("progress-fill").style.width = (count / MAX_PICKS * 100) + "%";
-    document.getElementById("progress-text").textContent = count + " / " + MAX_PICKS;
-
-    // Dots
-    for (let i = 0; i < MAX_PICKS; i++) {
-      const d = document.getElementById("pdot-" + i);
-      if (d) d.classList.toggle("lit", i < count);
-    }
-
-    // Disable unselected when full
-    window.CANDIDATES.forEach(c => {
-      const card = document.getElementById("card-" + c.id);
-      if (!selected.has(c.id) && count >= MAX_PICKS) card.classList.add("disabled");
-      else card.classList.remove("disabled");
+  // ── VOTING STATUS LISTENER ───────────────────────
+  function startVotingStatusListener() {
+    const statusRef = doc(db, "config", "votingStatus");
+    onSnapshot(statusRef, snap => {
+      const isOpen = snap.exists() ? snap.data().isOpen !== false : true;
+      // Don't update toggle if admin is mid-toggle (avoid echo)
+      if (!isTogglingStatus) {
+        updateStatusUI(isOpen);
+      }
+    }, err => {
+      console.error("Status listener error:", err);
     });
   }
 
-  // ── CONFIRM ────────────────────────────────────────────
-  window.openConfirm = function() {
-    const items = [...selected].map((id, i) => {
-      const c = window.CANDIDATES.find(x => x.id === id);
-      return `<div class="modal-cand-item"><span class="modal-cand-icon">👤</span>${c.name}<span style="margin-left:auto;font-size:11px;color:var(--muted)">${c.position}</span></div>`;
-    }).join("");
-    document.getElementById("confirm-list").innerHTML = items;
-    document.getElementById("confirm-modal").classList.add("active");
-  };
-  window.closeConfirm = function() {
-    document.getElementById("confirm-modal").classList.remove("active");
-  };
+  function updateStatusUI(isOpen) {
+    const toggle   = document.getElementById("voting-toggle");
+    const dot      = document.getElementById("status-dot");
+    const text     = document.getElementById("status-text");
+    const subtext  = document.getElementById("status-subtext");
 
-  // ── SUBMIT ─────────────────────────────────────────────
-  window.submitVote = async function() {
-    const btn = document.getElementById("confirm-submit-btn");
-    btn.disabled = true;
-    btn.innerHTML = '<div class="loader-ring" style="width:16px;height:16px;margin:0;border-width:2px;border-top-color:var(--obsidian)"></div> Menghantar...';
+    toggle.checked  = isOpen;
+    toggle.disabled = false;
+
+    if (isOpen) {
+      dot.className    = "status-dot online";
+      text.textContent = "Pengundian Dibuka";
+      text.className   = "status-text-online";
+      subtext.textContent = "Pengundi boleh menghantar undi mereka sekarang.";
+    } else {
+      dot.className    = "status-dot offline";
+      text.textContent = "Pengundian Ditutup";
+      text.className   = "status-text-offline";
+      subtext.textContent = "Undi tidak akan dikira semasa status ini. Pengundi melihat notis penangguhan.";
+    }
+  }
+
+  // ── TOGGLE HANDLER ───────────────────────────────
+  window.onToggleChange = async function(checkbox) {
+    const isOpen = checkbox.checked;
+    checkbox.disabled = true;
+    isTogglingStatus  = true;
 
     try {
-      const voterRef = doc(db, "voters", currentAnggota);
-      const snap = await getDoc(voterRef);
-      if (snap.exists() && snap.data().voted) {
-        alert("Nombor Anggota ini telah mengundi.");
-        closeConfirm(); location.reload(); return;
+      const statusRef = doc(db, "config", "votingStatus");
+      await setDoc(statusRef, { isOpen }, { merge: true });
+      updateStatusUI(isOpen);
+      showToast(isOpen ? "✅ Pengundian kini DIBUKA." : "🔒 Pengundian kini DITUTUP.");
+    } catch(e) {
+      console.error("Toggle error:", e);
+      checkbox.checked = !isOpen; // revert
+      updateStatusUI(!isOpen);
+      showToast("❌ Gagal menukar status: " + e.message, true);
+    } finally {
+      checkbox.disabled = false;
+      isTogglingStatus  = false;
+    }
+  };
+
+  // ── LIVE LISTENERS ───────────────────────────────
+  let allVoterDocs = [];
+  let isFirstVoterLoad = true;
+
+  function startLiveResults() {
+    const voteRef = doc(db, "votes", "tally");
+    onSnapshot(voteRef, snap => {
+      const votes = snap.exists() ? snap.data() : {};
+      updateTallyUI(votes);
+    });
+
+    onSnapshot(collection(db, "voters"), snap => {
+      snap.docChanges().forEach(change => {
+        if (change.type === "added") {
+          const exists = allVoterDocs.find(d => d.id === change.doc.id);
+          if (!exists) {
+            allVoterDocs.unshift(change.doc);
+            if (!isFirstVoterLoad) {
+              const data = change.doc.data();
+              const name = data.namaPengundi || data.anggota || change.doc.id;
+              showToast("🗳️ Undi baru diterima: " + name);
+              highlightNewRow(change.doc.id);
+            }
+          }
+        }
+        if (change.type === "removed") {
+          allVoterDocs = allVoterDocs.filter(d => d.id !== change.doc.id);
+        }
+      });
+      isFirstVoterLoad = false;
+      document.getElementById("voted-count").textContent = allVoterDocs.length;
+      document.getElementById("stat-voters").textContent  = allVoterDocs.length;
+      document.getElementById("last-updated").textContent = "Dikemaskini: " + new Date().toLocaleTimeString("ms-MY");
+      renderVoterTable(allVoterDocs);
+      const tallyRef = doc(db, "votes", "tally");
+      getDoc(tallyRef).then(snap => {
+        if (snap.exists()) updateTallyUI(snap.data());
+      });
+    });
+  }
+
+  function highlightNewRow(docId) {
+    setTimeout(() => {
+      const row = document.getElementById("vrow-" + docId);
+      if (row) {
+        row.style.transition = "background 0.5s";
+        row.style.background = "#EAF7EE";
+        setTimeout(() => { row.style.background = ""; }, 2500);
+      }
+    }, 100);
+  }
+
+  function updateTallyUI(votes) {
+    const voterCount = allVoterDocs.length;
+    const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
+    document.getElementById("stat-votes").textContent = totalVotes;
+
+    const denominator = voterCount > 0 ? voterCount : Math.round(totalVotes / 4) || 1;
+
+    const ranked = CANDIDATES
+      .map(c => ({ ...c, votes: votes[c.id] || 0 }))
+      .sort((a, b) => b.votes - a.votes);
+
+    const maxVotes = ranked[0]?.votes || 1;
+    const rClass   = ["r1","r2","r3"];
+
+    document.getElementById("results-tbody").innerHTML = ranked.map((c, i) => {
+      const pct  = denominator > 0 ? Math.round(c.votes / denominator * 100) : 0;
+      const barW = maxVotes   > 0  ? Math.round(c.votes / maxVotes   * 100) : 0;
+      return `<tr>
+        <td><span class="rank ${rClass[i] || 'rx'}">${i + 1}</span></td>
+        <td><strong>${c.name}</strong></td>
+        <td>${c.votes}</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-bg"><div class="bar-fill" style="width:${barW}%"></div></div>
+            <span class="bar-pct">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join("");
+  }
+
+  window.loadResults = async function() {
+    try {
+      const [voteSnap, votersSnap] = await Promise.all([
+        getDoc(doc(db, "votes", "tally")),
+        getDocs(collection(db, "voters"))
+      ]);
+      const votes = voteSnap.exists() ? voteSnap.data() : {};
+      allVoterDocs = votersSnap.docs;
+      document.getElementById("stat-voters").textContent  = allVoterDocs.length;
+      document.getElementById("voted-count").textContent  = allVoterDocs.length;
+      document.getElementById("last-updated").textContent = "Dikemaskini: " + new Date().toLocaleTimeString("ms-MY");
+      updateTallyUI(votes);
+      renderVoterTable(allVoterDocs);
+    } catch(e) {
+      console.error("Ralat memuatkan keputusan:", e);
+      showToast("Ralat memuatkan data.", true);
+    }
+  };
+
+  const voterDocMap = new Map();
+
+  function renderVoterTable(docs) {
+    const tbody = document.getElementById("voter-tbody");
+    const empty = document.getElementById("voter-empty");
+
+    if (!docs.length) {
+      tbody.innerHTML = "";
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+    voterDocMap.clear();
+
+    tbody.innerHTML = docs.map((d, i) => {
+      const data       = d.data();
+      const docId      = d.id;
+      voterDocMap.set(i, docId);
+      const memberName = data.namaPengundi || "—";
+      const rawAnggota = data.anggota || docId;
+      const icDisplay  = rawAnggota.includes("_") ? rawAnggota.split("_")[0] : rawAnggota;
+      const names      = data.pilihanNama || data.pilihan || [];
+      const ts         = data.votedAt?.toDate ? data.votedAt.toDate().toLocaleString("ms-MY") : "—";
+
+      const pillsHtml = Array.isArray(names) && names.length
+        ? names.map(n => `<span style="display:inline-block; background:rgba(13,27,62,0.07); border:1px solid rgba(13,27,62,0.12); border-radius:100px; padding:2px 10px; font-size:12px; margin:2px 3px 2px 0; white-space:nowrap;">${n}</span>`).join("")
+        : '<span style="color:var(--muted);font-size:12px;">—</span>';
+
+      const safeId = docId.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+      return `<tr id="vrow-${safeId}" style="border-bottom:1px solid rgba(13,27,62,0.06);">
+        <td style="padding:10px 12px; color:var(--muted); font-size:12px;">${i + 1}</td>
+        <td style="padding:10px 12px; white-space:nowrap;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy);">${memberName}</div>
+          <div style="font-size:11px; color:var(--muted); font-family:monospace; margin-top:2px;">IC: ${icDisplay}</div>
+        </td>
+        <td style="padding:10px 12px;">${pillsHtml}</td>
+        <td style="padding:10px 12px; color:var(--muted); font-size:12px; white-space:nowrap;">${ts}</td>
+        <td style="padding:10px 12px; text-align:center;">
+          <button onclick="cancelVote(${i})"
+            style="padding:5px 13px; border:1.5px solid rgba(192,57,43,0.35); background:transparent;
+                   border-radius:7px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+                   cursor:pointer; color:var(--red); transition:all 0.2s;"
+            onmouseover="this.style.background='#FDECEA'" onmouseout="this.style.background='transparent'">
+            🗑 Batal
+          </button>
+        </td>
+      </tr>`;
+    }).join("");
+  }
+
+  window.filterVoters = function() {
+    const q = document.getElementById("search-voter").value.trim().toLowerCase();
+    const filtered = allVoterDocs.filter(d => {
+      const data = d.data();
+      const name = (data.namaPengundi || "").toLowerCase();
+      const raw  = data.anggota || d.id;
+      const ic   = (raw.includes("_") ? raw.split("_")[0] : raw).toLowerCase();
+      return name.includes(q) || ic.includes(q);
+    });
+    renderVoterTable(filtered);
+  };
+
+  window.cancelVote = async function(idx) {
+    const anggota = voterDocMap.get(idx);
+    if (!anggota) { showToast("Rekod tidak dijumpai.", true); return; }
+
+    try {
+      const voterRef  = doc(db, "voters", anggota);
+      const voterSnap = await getDoc(voterRef);
+      if (!voterSnap.exists()) { showToast("Rekod tidak dijumpai.", true); return; }
+
+      const picked     = voterSnap.data().pilihan || [];
+      const memberName = voterSnap.data().namaPengundi || anggota;
+
+      if (!confirm(`Batalkan undi ${memberName}?\n\nTindakan ini akan memadam rekod pengundi dan tolak undi calon mereka.`)) return;
+
+      if (picked.length > 0) {
+        const tallyRef = doc(db, "votes", "tally");
+        const tallySnap = await getDoc(tallyRef);
+        if (tallySnap.exists()) {
+          const current = tallySnap.data();
+          const updateData = {};
+          picked.forEach(id => {
+            updateData[id] = Math.max(0, (current[id] || 0) - 1);
+          });
+          await setDoc(tallyRef, { ...current, ...updateData });
+        }
       }
 
-      // Save voter record including which candidates they picked
-      const pickedNames = [...selected].map(id => window.CANDIDATES.find(c => c.id === id).name);
-      await setDoc(voterRef, {
-        voted: true,
-        votedAt: serverTimestamp(),
-        anggota: currentAnggota,
-        namaPengundi: currentMemberName,
-        pilihan: [...selected],          // e.g. ["c1","c3","c4","c6"]
-        pilihanNama: pickedNames          // e.g. ["Ahmad","Siti","Nor","Cikyed"]
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "voters", anggota));
+      await batch.commit();
+
+      const safeId = anggota.replace(/[^a-zA-Z0-9_-]/g, "_");
+      const row = document.getElementById("vrow-" + safeId);
+      if (row) { row.style.transition = "opacity 0.3s"; row.style.opacity = "0"; setTimeout(() => row.remove(), 300); }
+
+      allVoterDocs = allVoterDocs.filter(d => d.id !== anggota);
+      document.getElementById("voted-count").textContent = allVoterDocs.length;
+      document.getElementById("stat-voters").textContent = allVoterDocs.length;
+
+      showToast(`✅ Undi ${memberName} telah dibatalkan.`);
+
+    } catch(e) {
+      console.error("Cancel vote error:", e);
+      const code = e.code || "";
+      if (code === "permission-denied") {
+        showToast("❌ Akses ditolak. Semak Firestore Rules.", true);
+      } else {
+        showToast("❌ Ralat: " + e.message, true);
+      }
+    }
+  };
+
+  window.exportCSV = async function() {
+    try {
+      const [voteSnap, votersSnap] = await Promise.all([
+        getDoc(doc(db, "votes", "tally")),
+        getDocs(collection(db, "voters"))
+      ]);
+      const votes      = voteSnap.exists() ? voteSnap.data() : {};
+      const voterCount = votersSnap.docs.length;
+
+      const ranked = CANDIDATES
+        .map(c => ({ ...c, votes: votes[c.id] || 0 }))
+        .sort((a, b) => b.votes - a.votes);
+
+      let csv = "Kedudukan,Nama Calon,Undi,Peratusan\n";
+      ranked.forEach((c, i) => {
+        const pct = voterCount > 0 ? (c.votes / voterCount * 100).toFixed(1) : "0.0";
+        csv += `${i + 1},"${c.name}",${c.votes},${pct}%\n`;
       });
 
-      const voteRef = doc(db, "votes", "tally");
-      const updateData = {};
-      selected.forEach(id => { updateData[id] = increment(1); });
-      const tallySnap = await getDoc(voteRef);
-      if (tallySnap.exists()) {
-        await updateDoc(voteRef, updateData);
-      } else {
-        const init = {};
-        window.CANDIDATES.forEach(c => { init[c.id] = 0; });
-        selected.forEach(id => { init[id] = 1; });
-        await setDoc(voteRef, init);
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const a    = document.createElement("a");
+      a.href     = URL.createObjectURL(blob);
+      a.download = "keputusan_pengundian.csv";
+      a.click();
+    } catch(e) {
+      showToast("Ralat semasa export.", true);
+      console.error(e);
+    }
+  };
+
+  window.openResetModal  = function() { document.getElementById("reset-modal").classList.add("open"); };
+  window.closeResetModal = function() { document.getElementById("reset-modal").classList.remove("open"); };
+
+  window.executeReset = async function() {
+    const btnConfirm = document.getElementById("btn-confirm-reset");
+    const btnCancel  = document.getElementById("btn-modal-cancel");
+
+    btnConfirm.disabled = true;
+    btnCancel.disabled  = true;
+    btnConfirm.textContent = "Memadam...";
+
+    try {
+      const votersSnap = await getDocs(collection(db, "voters"));
+      const docs    = votersSnap.docs;
+      const CHUNK   = 499;
+      for (let i = 0; i < docs.length; i += CHUNK) {
+        const batch = writeBatch(db);
+        docs.slice(i, i + CHUNK).forEach(d => batch.delete(d.ref));
+        await batch.commit();
       }
 
-      const chosen = [...selected].map(id => window.CANDIDATES.find(c => c.id === id));
-      document.getElementById("done-list").innerHTML = chosen.map((c, i) =>
-        `<div class="chosen-item">
-          <div class="chosen-item-dot"></div>
-          <span>${c.name}</span>
-          <span class="chosen-item-num">Calon ${window.CANDIDATES.findIndex(x=>x.id===c.id)+1}</span>
-        </div>`
-      ).join("");
+      const zeroed = {};
+      CANDIDATES.forEach(c => { zeroed[c.id] = 0; });
+      await setDoc(doc(db, "votes", "tally"), zeroed);
 
-      closeConfirm();
-      hide("screen-voting");
-      show("screen-done");
+      closeResetModal();
+      showToast("✅ Semua undian telah dipadamkan.");
+      await loadResults();
+
     } catch(e) {
-      alert("Ralat semasa menghantar undi. Sila cuba semula.");
-      btn.disabled = false;
-      btn.textContent = "Ya, Hantar Undi";
-      console.error(e);
+      console.error("Reset error full:", e);
+      const code = e.code || "";
+      let msg = e.message || "Ralat tidak diketahui.";
+      if (code === "permission-denied") {
+        msg = "Akses ditolak (permission-denied). Kemaskini Firestore Security Rules anda.";
+      } else if (code === "not-found") {
+        msg = "Dokumen tidak dijumpai (not-found). Cuba muat semula halaman.";
+      } else if (code === "unavailable") {
+        msg = "Sambungan Firestore terputus. Semak internet dan cuba semula.";
+      }
+      showToast("❌ " + msg, true);
+      alert("Ralat Reset:\n\nKod: " + (code || "unknown") + "\nMesej: " + msg);
+    } finally {
+      btnConfirm.disabled    = false;
+      btnCancel.disabled     = false;
+      btnConfirm.textContent = "Ya, Set Semula";
     }
   };
 </script>
