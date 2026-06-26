@@ -13,7 +13,7 @@
       --cream: #FAF8F2; --white: #FFFFFF;
       --text: #1A1A2E; --muted: #5A5A7A;
       --border: rgba(184,134,11,0.2); --radius: 12px;
-      --red: #C0392B;
+      --red: #C0392B; --green: #1E6B3C;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
     header { background: var(--navy); padding: 1.5rem 2rem; text-align: center; }
@@ -26,7 +26,6 @@
     header h1 span { color: var(--gold-light); }
     .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
 
-    /* LOADING */
     #screen-loading { text-align: center; padding: 4rem 1rem; }
     .spinner {
       width: 40px; height: 40px; border: 3px solid rgba(13,27,62,0.1);
@@ -36,7 +35,6 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     #screen-loading p { color: var(--muted); font-size: 14px; }
 
-    /* AUTH */
     #screen-auth { max-width: 360px; margin: 3rem auto; display: none; }
     .card {
       background: var(--white); border: 1px solid var(--border);
@@ -60,7 +58,6 @@
     .btn-primary:hover { background: var(--navy-light); }
     .err { color: var(--red); font-size: 13px; margin-top: 8px; }
 
-    /* RESULTS */
     #screen-results { display: none; }
     .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
     .stat-card {
@@ -101,14 +98,7 @@
 
     .voted-section { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1rem; }
     .voted-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
-    .anggota-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-    .anggota-pill {
-      background: var(--cream); border: 1px solid var(--border);
-      border-radius: 100px; padding: 3px 12px;
-      font-size: 12px; font-family: monospace; color: var(--navy);
-    }
 
-    /* RESET MODAL */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.5); z-index: 999;
@@ -134,7 +124,6 @@
     .btn-confirm-reset:hover { background: #a93226; }
     .btn-confirm-reset:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* toast */
     .toast {
       position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
       background: #1E6B3C; color: #fff;
@@ -147,6 +136,59 @@
     }
     .toast.show { opacity: 1; }
     .toast.error { background: var(--red); }
+
+    /* ── VOTING STATUS TOGGLE ── */
+    .status-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .status-panel-left { display: flex; flex-direction: column; gap: 4px; }
+    .status-panel-left .sp-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .status-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 700;
+    }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      transition: background 0.3s;
+    }
+    .status-dot.online { background: #27AE60; animation: pulse 1.5s ease-in-out infinite; }
+    .status-dot.offline { background: #C0392B; }
+    .status-text-online { color: #1E6B3C; }
+    .status-text-offline { color: #C0392B; }
+
+    /* Toggle switch */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .toggle-switch {
+      position: relative; display: inline-block; width: 52px; height: 28px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: #C0392B; border-radius: 28px;
+      transition: background 0.3s;
+    }
+    .toggle-slider::before {
+      content: ""; position: absolute;
+      width: 20px; height: 20px; border-radius: 50%; background: white;
+      left: 4px; top: 4px;
+      transition: transform 0.3s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: #27AE60; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); }
+    .toggle-switch input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+    .status-subtext { font-size: 12px; color: var(--muted); margin-top: 2px; max-width: 340px; }
   </style>
 </head>
 <body>
@@ -176,6 +218,26 @@
   <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:1.5rem;">
     <div class="live-badge"><div class="live-dot"></div> Keputusan Langsung (Auto-refresh)</div>
     <span id="last-updated" style="font-size:12px; color:var(--muted);"></span>
+  </div>
+
+  <!-- ── VOTING STATUS PANEL ── -->
+  <div class="status-panel">
+    <div class="status-panel-left">
+      <span class="sp-label">Status Pengundian</span>
+      <div class="status-indicator" id="status-indicator">
+        <div class="status-dot offline" id="status-dot"></div>
+        <span id="status-text" class="status-text-offline">Memuatkan...</span>
+      </div>
+      <span class="status-subtext" id="status-subtext">Semak sambungan...</span>
+    </div>
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="toggle-label-off" style="color:var(--red);">Ditutup</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="voting-toggle" onchange="onToggleChange(this)" disabled />
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="toggle-label" id="toggle-label-on" style="color:#1E6B3C;">Dibuka</span>
+    </div>
   </div>
 
   <div class="btn-actions">
@@ -237,14 +299,13 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getFirestore, doc, getDoc, getDocs,
-    collection, writeBatch, setDoc, onSnapshot
+    collection, writeBatch, setDoc, onSnapshot, updateDoc
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ═══════════════════════════════════════════════
@@ -272,6 +333,7 @@
   ];
 
   let db;
+  let isTogglingStatus = false;
 
   function show(id) { document.getElementById(id).style.display = "block"; }
   function hide(id) { document.getElementById(id).style.display = "none"; }
@@ -300,32 +362,88 @@
       hide("screen-auth");
       show("screen-results");
       startLiveResults();
+      startVotingStatusListener();
     } else {
       document.getElementById("auth-err").style.display = "block";
     }
   };
 
+  // ── VOTING STATUS LISTENER ───────────────────────
+  function startVotingStatusListener() {
+    const statusRef = doc(db, "config", "votingStatus");
+    onSnapshot(statusRef, snap => {
+      const isOpen = snap.exists() ? snap.data().isOpen !== false : true;
+      // Don't update toggle if admin is mid-toggle (avoid echo)
+      if (!isTogglingStatus) {
+        updateStatusUI(isOpen);
+      }
+    }, err => {
+      console.error("Status listener error:", err);
+    });
+  }
+
+  function updateStatusUI(isOpen) {
+    const toggle   = document.getElementById("voting-toggle");
+    const dot      = document.getElementById("status-dot");
+    const text     = document.getElementById("status-text");
+    const subtext  = document.getElementById("status-subtext");
+
+    toggle.checked  = isOpen;
+    toggle.disabled = false;
+
+    if (isOpen) {
+      dot.className    = "status-dot online";
+      text.textContent = "Pengundian Dibuka";
+      text.className   = "status-text-online";
+      subtext.textContent = "Pengundi boleh menghantar undi mereka sekarang.";
+    } else {
+      dot.className    = "status-dot offline";
+      text.textContent = "Pengundian Ditutup";
+      text.className   = "status-text-offline";
+      subtext.textContent = "Undi tidak akan dikira semasa status ini. Pengundi melihat notis penangguhan.";
+    }
+  }
+
+  // ── TOGGLE HANDLER ───────────────────────────────
+  window.onToggleChange = async function(checkbox) {
+    const isOpen = checkbox.checked;
+    checkbox.disabled = true;
+    isTogglingStatus  = true;
+
+    try {
+      const statusRef = doc(db, "config", "votingStatus");
+      await setDoc(statusRef, { isOpen }, { merge: true });
+      updateStatusUI(isOpen);
+      showToast(isOpen ? "✅ Pengundian kini DIBUKA." : "🔒 Pengundian kini DITUTUP.");
+    } catch(e) {
+      console.error("Toggle error:", e);
+      checkbox.checked = !isOpen; // revert
+      updateStatusUI(!isOpen);
+      showToast("❌ Gagal menukar status: " + e.message, true);
+    } finally {
+      checkbox.disabled = false;
+      isTogglingStatus  = false;
+    }
+  };
+
   // ── LIVE LISTENERS ───────────────────────────────
-  let allVoterDocs = []; // single source of truth
+  let allVoterDocs = [];
   let isFirstVoterLoad = true;
 
   function startLiveResults() {
-    // Listener 1: votes tally → update results table
     const voteRef = doc(db, "votes", "tally");
     onSnapshot(voteRef, snap => {
       const votes = snap.exists() ? snap.data() : {};
       updateTallyUI(votes);
     });
 
-    // Listener 2: voters collection → update voter table in real-time
     onSnapshot(collection(db, "voters"), snap => {
       snap.docChanges().forEach(change => {
         if (change.type === "added") {
           const exists = allVoterDocs.find(d => d.id === change.doc.id);
           if (!exists) {
-            allVoterDocs.unshift(change.doc); // newest on top
+            allVoterDocs.unshift(change.doc);
             if (!isFirstVoterLoad) {
-              // Flash notification for new vote
               const data = change.doc.data();
               const name = data.namaPengundi || data.anggota || change.doc.id;
               showToast("🗳️ Undi baru diterima: " + name);
@@ -342,7 +460,6 @@
       document.getElementById("stat-voters").textContent  = allVoterDocs.length;
       document.getElementById("last-updated").textContent = "Dikemaskini: " + new Date().toLocaleTimeString("ms-MY");
       renderVoterTable(allVoterDocs);
-      // Re-render tally so percentage recalculates with correct voter count
       const tallyRef = doc(db, "votes", "tally");
       getDoc(tallyRef).then(snap => {
         if (snap.exists()) updateTallyUI(snap.data());
@@ -366,9 +483,6 @@
     const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
     document.getElementById("stat-votes").textContent = totalVotes;
 
-    // Use totalVotes as denominator since each voter picks 4 candidates
-    // Percentage = votes for this candidate / number of voters (not total votes)
-    // If voterCount not yet loaded, fall back to totalVotes / 4
     const denominator = voterCount > 0 ? voterCount : Math.round(totalVotes / 4) || 1;
 
     const ranked = CANDIDATES
@@ -395,7 +509,6 @@
     }).join("");
   }
 
-  // ── LOAD RESULTS (manual refresh) ────────────────
   window.loadResults = async function() {
     try {
       const [voteSnap, votersSnap] = await Promise.all([
@@ -415,8 +528,7 @@
     }
   };
 
-  // ── RENDER VOTER TABLE ───────────────────────────
-  const voterDocMap = new Map(); // index -> docId
+  const voterDocMap = new Map();
 
   function renderVoterTable(docs) {
     const tbody = document.getElementById("voter-tbody");
@@ -433,7 +545,7 @@
     tbody.innerHTML = docs.map((d, i) => {
       const data       = d.data();
       const docId      = d.id;
-      voterDocMap.set(i, docId); // store safely in map
+      voterDocMap.set(i, docId);
       const memberName = data.namaPengundi || "—";
       const rawAnggota = data.anggota || docId;
       const icDisplay  = rawAnggota.includes("_") ? rawAnggota.split("_")[0] : rawAnggota;
@@ -467,7 +579,6 @@
     }).join("");
   }
 
-  // ── SEARCH / FILTER ──────────────────────────────
   window.filterVoters = function() {
     const q = document.getElementById("search-voter").value.trim().toLowerCase();
     const filtered = allVoterDocs.filter(d => {
@@ -480,7 +591,6 @@
     renderVoterTable(filtered);
   };
 
-  // ── CANCEL SINGLE VOTE ───────────────────────────
   window.cancelVote = async function(idx) {
     const anggota = voterDocMap.get(idx);
     if (!anggota) { showToast("Rekod tidak dijumpai.", true); return; }
@@ -495,7 +605,6 @@
 
       if (!confirm(`Batalkan undi ${memberName}?\n\nTindakan ini akan memadam rekod pengundi dan tolak undi calon mereka.`)) return;
 
-      // Decrement tally for each picked candidate
       if (picked.length > 0) {
         const tallyRef = doc(db, "votes", "tally");
         const tallySnap = await getDoc(tallyRef);
@@ -509,17 +618,14 @@
         }
       }
 
-      // Delete voter doc
       const batch = writeBatch(db);
-      batch.delete(voterRef);
+      batch.delete(doc(db, "voters", anggota));
       await batch.commit();
 
-      // Animate row out
       const safeId = anggota.replace(/[^a-zA-Z0-9_-]/g, "_");
       const row = document.getElementById("vrow-" + safeId);
       if (row) { row.style.transition = "opacity 0.3s"; row.style.opacity = "0"; setTimeout(() => row.remove(), 300); }
 
-      // Update local data
       allVoterDocs = allVoterDocs.filter(d => d.id !== anggota);
       document.getElementById("voted-count").textContent = allVoterDocs.length;
       document.getElementById("stat-voters").textContent = allVoterDocs.length;
@@ -537,7 +643,6 @@
     }
   };
 
-  // ── EXPORT CSV ───────────────────────────────────
   window.exportCSV = async function() {
     try {
       const [voteSnap, votersSnap] = await Promise.all([
@@ -568,13 +673,10 @@
     }
   };
 
-  // ── RESET MODAL ──────────────────────────────────
   window.openResetModal  = function() { document.getElementById("reset-modal").classList.add("open"); };
   window.closeResetModal = function() { document.getElementById("reset-modal").classList.remove("open"); };
 
-  // ── EXECUTE RESET ────────────────────────────────
   window.executeReset = async function() {
-    const btnReset   = document.getElementById("btn-reset");
     const btnConfirm = document.getElementById("btn-confirm-reset");
     const btnCancel  = document.getElementById("btn-modal-cancel");
 
@@ -583,10 +685,7 @@
     btnConfirm.textContent = "Memadam...";
 
     try {
-      // 1. Delete all voter docs using a writeBatch (up to 500 per batch)
       const votersSnap = await getDocs(collection(db, "voters"));
-
-      // Split into chunks of 499
       const docs    = votersSnap.docs;
       const CHUNK   = 499;
       for (let i = 0; i < docs.length; i += CHUNK) {
@@ -595,7 +694,6 @@
         await batch.commit();
       }
 
-      // 2. Zero-out tally doc (don't delete — keeps onSnapshot working)
       const zeroed = {};
       CANDIDATES.forEach(c => { zeroed[c.id] = 0; });
       await setDoc(doc(db, "votes", "tally"), zeroed);
@@ -606,18 +704,16 @@
 
     } catch(e) {
       console.error("Reset error full:", e);
-      // Surface the Firestore error code so it's actionable
       const code = e.code || "";
       let msg = e.message || "Ralat tidak diketahui.";
       if (code === "permission-denied") {
-        msg = "Akses ditolak (permission-denied). Kemaskini Firestore Security Rules anda — pastikan allow delete: if true; untuk koleksi voters.";
+        msg = "Akses ditolak (permission-denied). Kemaskini Firestore Security Rules anda.";
       } else if (code === "not-found") {
         msg = "Dokumen tidak dijumpai (not-found). Cuba muat semula halaman.";
       } else if (code === "unavailable") {
         msg = "Sambungan Firestore terputus. Semak internet dan cuba semula.";
       }
       showToast("❌ " + msg, true);
-      // Also show in a visible alert so it's not missed
       alert("Ralat Reset:\n\nKod: " + (code || "unknown") + "\nMesej: " + msg);
     } finally {
       btnConfirm.disabled    = false;
