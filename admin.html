@@ -189,6 +189,29 @@
     .toggle-switch input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
 
     .status-subtext { font-size: 12px; color: var(--muted); margin-top: 2px; max-width: 340px; }
+
+    /* ── VOTING STATUS BANNER ── */
+    .status-banner {
+      display: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+    }
+    .status-banner.open {
+      display: block;
+      background: #EAF7EE;
+      border: 1px solid #A9DFBF;
+      color: #1E6B3C;
+    }
+    .status-banner.closed {
+      display: block;
+      background: #FDECEA;
+      border: 1px solid #F5B7B1;
+      color: #C0392B;
+    }
   </style>
 </head>
 <body>
@@ -239,6 +262,9 @@
       <span class="toggle-label" id="toggle-label-on" style="color:#1E6B3C;">Dibuka</span>
     </div>
   </div>
+
+  <!-- Status Banner -->
+  <div id="status-banner" class="status-banner"></div>
 
   <div class="btn-actions">
     <button class="btn-outline" onclick="loadResults()">🔄 Muat Semula Manual</button>
@@ -334,6 +360,9 @@
 
   let db;
   let isTogglingStatus = false;
+  let allVoterDocs = [];
+  let isFirstVoterLoad = true;
+  const voterDocMap = new Map();
 
   function show(id) { document.getElementById(id).style.display = "block"; }
   function hide(id) { document.getElementById(id).style.display = "none"; }
@@ -361,21 +390,53 @@
     if (pw === ADMIN_PASSWORD) {
       hide("screen-auth");
       show("screen-results");
+      initializeVotingStatus();
       startLiveResults();
-      startVotingStatusListener();
     } else {
       document.getElementById("auth-err").style.display = "block";
     }
   };
 
+  // ── INITIALIZE VOTING STATUS ─────────────────────
+  async function initializeVotingStatus() {
+    try {
+      const statusRef = doc(db, "config", "votingStatus");
+      const snap = await getDoc(statusRef);
+      
+      if (!snap.exists()) {
+        // Create the status document with voting CLOSED by default
+        await setDoc(statusRef, { 
+          isOpen: false,
+          lastUpdated: new Date().toISOString()
+        });
+        console.log("✅ Voting status initialized (closed by default)");
+        updateStatusUI(false);
+      } else {
+        const isOpen = snap.data().isOpen !== false;
+        updateStatusUI(isOpen);
+        console.log("📊 Current voting status:", snap.data());
+      }
+      
+      // Start the status listener after initialization
+      startVotingStatusListener();
+      
+    } catch(e) {
+      console.error("❌ Error initializing voting status:", e);
+      document.getElementById("status-subtext").textContent = "⚠️ Error connecting to voting system";
+      // Show error but continue
+    }
+  }
+
   // ── VOTING STATUS LISTENER ───────────────────────
   function startVotingStatusListener() {
     const statusRef = doc(db, "config", "votingStatus");
     onSnapshot(statusRef, snap => {
-      const isOpen = snap.exists() ? snap.data().isOpen !== false : true;
-      // Don't update toggle if admin is mid-toggle (avoid echo)
-      if (!isTogglingStatus) {
-        updateStatusUI(isOpen);
+      if (snap.exists()) {
+        const isOpen = snap.data().isOpen !== false;
+        // Don't update toggle if admin is mid-toggle (avoid echo)
+        if (!isTogglingStatus) {
+          updateStatusUI(isOpen);
+        }
       }
     }, err => {
       console.error("Status listener error:", err);
@@ -387,6 +448,7 @@
     const dot      = document.getElementById("status-dot");
     const text     = document.getElementById("status-text");
     const subtext  = document.getElementById("status-subtext");
+    const banner   = document.getElementById("status-banner");
 
     toggle.checked  = isOpen;
     toggle.disabled = false;
@@ -396,11 +458,15 @@
       text.textContent = "Pengundian Dibuka";
       text.className   = "status-text-online";
       subtext.textContent = "Pengundi boleh menghantar undi mereka sekarang.";
+      banner.className = "status-banner open";
+      banner.textContent = "✅ Pengundian DIBUKA — Pengundi boleh mengundi sekarang.";
     } else {
       dot.className    = "status-dot offline";
       text.textContent = "Pengundian Ditutup";
       text.className   = "status-text-offline";
       subtext.textContent = "Undi tidak akan dikira semasa status ini. Pengundi melihat notis penangguhan.";
+      banner.className = "status-banner closed";
+      banner.textContent = "🔒 Pengundian DITUTUP — Tiada undi baru akan diterima.";
     }
   }
 
@@ -412,7 +478,10 @@
 
     try {
       const statusRef = doc(db, "config", "votingStatus");
-      await setDoc(statusRef, { isOpen }, { merge: true });
+      await setDoc(statusRef, { 
+        isOpen: isOpen,
+        lastUpdated: new Date().toISOString()
+      }, { merge: true });
       updateStatusUI(isOpen);
       showToast(isOpen ? "✅ Pengundian kini DIBUKA." : "🔒 Pengundian kini DITUTUP.");
     } catch(e) {
@@ -427,9 +496,6 @@
   };
 
   // ── LIVE LISTENERS ───────────────────────────────
-  let allVoterDocs = [];
-  let isFirstVoterLoad = true;
-
   function startLiveResults() {
     const voteRef = doc(db, "votes", "tally");
     onSnapshot(voteRef, snap => {
@@ -454,6 +520,15 @@
         if (change.type === "removed") {
           allVoterDocs = allVoterDocs.filter(d => d.id !== change.doc.id);
         }
+        if (change.type === "modified") {
+          // Update the doc in the array
+          const index = allVoterDocs.findIndex(d => d.id === change.doc.id);
+          if (index !== -1) {
+            allVoterDocs[index] = change.doc;
+          } else {
+            allVoterDocs.unshift(change.doc);
+          }
+        }
       });
       isFirstVoterLoad = false;
       document.getElementById("voted-count").textContent = allVoterDocs.length;
@@ -469,7 +544,8 @@
 
   function highlightNewRow(docId) {
     setTimeout(() => {
-      const row = document.getElementById("vrow-" + docId);
+      const safeId = docId.replace(/[^a-zA-Z0-9_-]/g, "_");
+      const row = document.getElementById("vrow-" + safeId);
       if (row) {
         row.style.transition = "background 0.5s";
         row.style.background = "#EAF7EE";
@@ -528,13 +604,11 @@
     }
   };
 
-  const voterDocMap = new Map();
-
   function renderVoterTable(docs) {
     const tbody = document.getElementById("voter-tbody");
     const empty = document.getElementById("voter-empty");
 
-    if (!docs.length) {
+    if (!docs || docs.length === 0) {
       tbody.innerHTML = "";
       empty.style.display = "block";
       return;
@@ -549,7 +623,17 @@
       const memberName = data.namaPengundi || "—";
       const rawAnggota = data.anggota || docId;
       const icDisplay  = rawAnggota.includes("_") ? rawAnggota.split("_")[0] : rawAnggota;
-      const names      = data.pilihanNama || data.pilihan || [];
+      
+      // Handle both formats: pilihan (IDs) or pilihanNama (names)
+      let names = data.pilihanNama || data.pilihan || [];
+      // If pilihan contains IDs, map to names
+      if (data.pilihan && Array.isArray(data.pilihan) && data.pilihan.length > 0 && !data.pilihanNama) {
+        names = data.pilihan.map(id => {
+          const candidate = CANDIDATES.find(c => c.id === id);
+          return candidate ? candidate.name : id;
+        });
+      }
+      
       const ts         = data.votedAt?.toDate ? data.votedAt.toDate().toLocaleString("ms-MY") : "—";
 
       const pillsHtml = Array.isArray(names) && names.length
@@ -600,8 +684,14 @@
       const voterSnap = await getDoc(voterRef);
       if (!voterSnap.exists()) { showToast("Rekod tidak dijumpai.", true); return; }
 
-      const picked     = voterSnap.data().pilihan || [];
-      const memberName = voterSnap.data().namaPengundi || anggota;
+      const data = voterSnap.data();
+      let picked = data.pilihan || [];
+      // If picked contains IDs, use them directly
+      // If it's names, we need to map back to IDs
+      if (picked.length > 0 && typeof picked[0] !== 'string' && !picked[0].startsWith('c')) {
+        // Already handled in render
+      }
+      const memberName = data.namaPengundi || anggota;
 
       if (!confirm(`Batalkan undi ${memberName}?\n\nTindakan ini akan memadam rekod pengundi dan tolak undi calon mereka.`)) return;
 
@@ -612,7 +702,12 @@
           const current = tallySnap.data();
           const updateData = {};
           picked.forEach(id => {
-            updateData[id] = Math.max(0, (current[id] || 0) - 1);
+            // Ensure we're using IDs, not names
+            const candidateId = typeof id === 'string' && id.startsWith('c') ? id : 
+                               CANDIDATES.find(c => c.name === id)?.id || id;
+            if (candidateId) {
+              updateData[candidateId] = Math.max(0, (current[candidateId] || 0) - 1);
+            }
           });
           await setDoc(tallyRef, { ...current, ...updateData });
         }
@@ -662,6 +757,26 @@
         csv += `${i + 1},"${c.name}",${c.votes},${pct}%\n`;
       });
 
+      // Add voter details
+      csv += "\n\nRekod Pengundi\n";
+      csv += "Nama,IC,Calon Dipilih,Masa\n";
+      votersSnap.docs.forEach(d => {
+        const data = d.data();
+        const name = data.namaPengundi || "—";
+        const raw = data.anggota || d.id;
+        const ic = raw.includes("_") ? raw.split("_")[0] : raw;
+        let picked = data.pilihanNama || data.pilihan || [];
+        if (data.pilihan && Array.isArray(data.pilihan) && data.pilihan.length > 0 && !data.pilihanNama) {
+          picked = data.pilihan.map(id => {
+            const candidate = CANDIDATES.find(c => c.id === id);
+            return candidate ? candidate.name : id;
+          });
+        }
+        const names = Array.isArray(picked) ? picked.join(", ") : "—";
+        const ts = data.votedAt?.toDate ? data.votedAt.toDate().toLocaleString("ms-MY") : "—";
+        csv += `"${name}","${ic}","${names}","${ts}"\n`;
+      });
+
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
       const a    = document.createElement("a");
       a.href     = URL.createObjectURL(blob);
@@ -698,9 +813,16 @@
       CANDIDATES.forEach(c => { zeroed[c.id] = 0; });
       await setDoc(doc(db, "votes", "tally"), zeroed);
 
+      // Also reset voting status to closed
+      await setDoc(doc(db, "config", "votingStatus"), { 
+        isOpen: false,
+        lastUpdated: new Date().toISOString()
+      });
+
       closeResetModal();
-      showToast("✅ Semua undian telah dipadamkan.");
+      showToast("✅ Semua undian telah dipadamkan dan pengundian ditutup.");
       await loadResults();
+      updateStatusUI(false);
 
     } catch(e) {
       console.error("Reset error full:", e);
